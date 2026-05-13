@@ -2,19 +2,36 @@
 
 ## Part 1: Project Direction
 
-#### Our team will create an original pixel-art interactive artwork inspired by the visual atmosphere of The Starry Night, as well as psychological narrative games such as Needy Streamer Overload and Rusty Lake. 
+ Our team will create an original pixel-art interactive artwork inspired by the visual atmosphere of The Starry Night, as well as psychological narrative games such as Needy Streamer Overload and Rusty Lake. 
 
-#### The protagonist is a nun who repeatedly faces two choices throughout the story: confronting the truth or choosing to lie. Each decision changes the visual and emotional state of the world. When she chooses to face the truth, the environment gradually becomes warmer and brighter. When she chooses to lie, the visuals begin to glitch, distort, and feel unstable. Through branching narratives and interactive mechanics, we aim to explore themes of escapism, self-deception, and emotional redemption.
+ The protagonist is a nun who repeatedly faces two choices throughout the story: confronting the truth or choosing to lie. Each decision changes the visual and emotional state of the world. When she chooses to face the truth, the environment gradually becomes warmer and brighter. When she chooses to lie, the visuals begin to glitch, distort, and feel unstable. Through branching narratives and interactive mechanics, we aim to explore themes of escapism, self-deception, and emotional redemption.
 
 ![Sketch](image/NeedyStreamerOverload.jpg)
 *Needy Streamer Overload*
+
 ![Sketch](image/RustyLake.jpg)
 *Rusty Lake*
+
 ![Sketch](image/TheStarryNight.png)
 *The Starry Night*
 
 ## Part 2: Mechanics
-### Audio:
+### Audio: Yusi Zhou
+The audio mechanic uses the level and frequency content of an audio track to control the atmosphere and visual changes inside the confession room. This mechanic will be created using p5.FFT analysis, allowing the soundtrack to directly influence the environment and emotional tone of the scene. The candle flame reacts to the volume of the audio. When the soundtrack becomes louder, the flame flickers more strongly, while the circular halo behind the candle expands and brightens. This creates a sacred but unstable atmosphere that reflects the emotional condition of the character.
+
+![Sketch](image/candle2.jpg)
+*Candle Flame Flickering*
+
+The soundtrack also affects the cross animation. Low-frequency sounds cause the cross to pulse slowly, creating a breathing or heartbeat-like movement. As the audio becomes darker and more intense, the cross begins to display glitch-like visual effects such as duplicated shadows, slight position shifts, and flickering movement. At the same time, sharp high-frequency sounds generate red vertical glitch lines across the screen, creating a corrupted digital effect inspired by psychological horror and glitch aesthetics.
+
+![Sketch](image/christian-cross-pixel-art-pixel-art-cross-christianity-jesus-8bit-pixel.jpeg)
+*Christian Cross Shifting*
+
+![Sketch](image/RedLines.png)
+*Red Glitch Lines*
+
+The user interacts with this mechanic through the story choices. If the nun chooses to face the truth, the audio remains calm and soft, keeping the visual effects stable and warm. If she chooses to lie, the soundtrack gradually becomes heavier and more distorted, causing the candle, cross, and glitch effects to become increasingly unstable. This connects directly to our project vision by using sound-driven visual changes to represent guilt, self-deception, and psychological collapse.
+
 ### Time-based: Zhige Hu
 The time-based mechanic in our project is used to make the picture feel alive and emotionally reactive. We plan to use timers to gradually change the atmosphere depending on the player’s choices. Throughout the story, timed visual effects reflect the nun’s emotional state.
 
