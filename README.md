@@ -1,4 +1,4 @@
-## Project TitleL：The Last Prayer
+## Project Title：The Last Prayer
 
 ## Part 1: Project Direction
 
@@ -7,11 +7,11 @@
 #### The protagonist is a nun who repeatedly faces two choices throughout the story: confronting the truth or choosing to lie. Each decision changes the visual and emotional state of the world. When she chooses to face the truth, the environment gradually becomes warmer and brighter. When she chooses to lie, the visuals begin to glitch, distort, and feel unstable. Through branching narratives and interactive mechanics, we aim to explore themes of escapism, self-deception, and emotional redemption.
 
 ![Sketch](image/NeedyStreamerOverload.jpg)
-Needy Streamer Overload
+*Needy Streamer Overload*
 ![Sketch](image/RustyLake.jpg)
-Rusty Lake
+*Rusty Lake*
 ![Sketch](image/TheStarryNight.png)
-The Starry Night
+*The Starry Night*
 
 ## Part 2: Mechanics
 ### Audio:
