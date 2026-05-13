@@ -14,16 +14,16 @@
 *The Starry Night*
 
 ## Part 2: Mechanics
-### Audio:
-### Time-based: Zhige Hu
+### 1. Audio:
+### 2. Time-based: Zhige Hu
 The time-based mechanic in our project is used to make the picture feel alive and emotionally reactive. We plan to use timers to gradually change the atmosphere depending on the player’s choices. Throughout the story, timed visual effects reflect the nun’s emotional state.
 
 In the initial church background, candlelights will flicker every few seconds through looping timed animations. We want to give the environment a breathing and uneasy feeling. If the player chooses to lie, timers will trigger glitch effects such as screen distortion, static noise, flashing error pop-ups, and sudden snow-screen interruptions at random intervals. At first, these effects appear briefly, but over time, they become more frequent and chaotic, making it feel as though the artwork itself is malfunctioning.
 
 In contrast, if the player chooses honesty, the church environment will become brighter and warmer. Small pixel stars will begin appearing around the screen, continuously twinkling and gently scaling in and out through timed loops. A glowing halo will also appear above the nun’s head and softly float up and down. These animations create a calm and dreamlike atmosphere, symbolising healing and emotional redemption.
 
-### Perlin noise and randomness:
-### User input: Yang Zhou
+### 3. Perlin noise and randomness:
+### 4. User input: Yang Zhou
 The User Input mechanic allows players to directly influence the development of the story through keyboard and mouse interactions. 
 
 During key moments in the narrative, the player must make choices for the nun: whether to confront the truth or lie to escape reality. These decisions are made by clicking dialogue options or pressing assigned keys on the keyboard. Each choice immediately changes the visual atmosphere of the game. When the player chooses to face the truth, the environment gradually becomes warmer and brighter, with calmer movement and visuals. When the player chooses to lie, the screen begins to show glitches, distortion, and unstable visual effects. 
