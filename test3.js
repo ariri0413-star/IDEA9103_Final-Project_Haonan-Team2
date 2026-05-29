@@ -4,7 +4,7 @@ let bgMask = [];
 
 function preload() {
 
-  img = loadImage("image/nun2.png");
+  img = loadImage("image/nun1.png");
 
 }
 
