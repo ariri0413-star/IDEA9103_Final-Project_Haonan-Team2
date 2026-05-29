@@ -14,7 +14,7 @@ function setup() {
 
   noSmooth();
 
-  pixelDensity(1);
+  pixelDensity();
 
   img.loadPixels();
 
