@@ -1,4 +1,4 @@
-const imagePath = 'image/nun2.png';
+const imagePath = 'image/angel.png';
 const PIXEL_SIZE = 4;
 
 let img = new Image();
@@ -44,25 +44,27 @@ function drawPixelArt(pixelSize) {
 
   hiddenCanvas.width = img.width;
   hiddenCanvas.height = img.height;
+  hiddenCtx.clearRect(0, 0, hiddenCanvas.width, hiddenCanvas.height);
   hiddenCtx.drawImage(img, 0, 0, img.width, img.height);
 
   const imageAspect = img.width / img.height;
-const canvasAspect = canvas.width / canvas.height;
+  const canvasAspect = canvas.width / canvas.height;
 
-let drawWidth, drawHeight;
+  let drawWidth;
+  let drawHeight;
 
-if (canvasAspect > imageAspect) {
-  drawHeight = canvas.height;
-  drawWidth = drawHeight * imageAspect;
-} else {
-  drawWidth = canvas.width;
-  drawHeight = drawWidth / imageAspect;
-}
+  if (canvasAspect > imageAspect) {
+    drawHeight = canvas.height;
+    drawWidth = drawHeight * imageAspect;
+  } else {
+    drawWidth = canvas.width;
+    drawHeight = drawWidth / imageAspect;
+  }
 
-const offsetX = (canvas.width - drawWidth) / 2;
-const offsetY = (canvas.height - drawHeight) / 2;
+  const offsetX = (canvas.width - drawWidth) / 2;
+  const offsetY = (canvas.height - drawHeight) / 2;
 
-  ctx.clearRect(0, 0, drawWidth, drawHeight);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.imageSmoothingEnabled = false;
 
   const scaleX = img.width / drawWidth;
@@ -109,13 +111,16 @@ const offsetY = (canvas.height - drawHeight) / 2;
       blue = Math.round(blue / count);
       alpha = Math.round((alpha / count / 255) * 100) / 100;
 
+      if (alpha < 0.05) continue;
+
       ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+
       ctx.fillRect(
-  x + offsetX,
-  y + offsetY,
-  pixelSize,
-  pixelSize
-  );
+        x + offsetX,
+        y + offsetY,
+        pixelSize,
+        pixelSize
+      );
     }
   }
 }
