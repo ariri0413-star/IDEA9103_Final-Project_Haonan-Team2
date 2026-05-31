@@ -5,6 +5,7 @@ let goodSong;
 let badCrosses = [];
 
 let analyser;
+let fft;
 let playButton;
 
 function preload() {
@@ -22,6 +23,8 @@ function setup() {
 
   analyser = new p5.Amplitude();
   analyser.setInput(openingSong);
+  fft = new p5.FFT();
+  fft.setInput(openingSong);
 
   playButton = createButton("Play/Pause");
   playButton.position(width * 0.02, height * 0.03);
@@ -130,7 +133,7 @@ function drawHeart(x, y, ps, mirror) {
 
 // ——————————————————————————————————————————————————
 
-function drawCross(x, y, ps) {
+function drawCross(x, y, ps, rms) {
   noStroke();
 
   for (let r = 0; r < XH; r++) {
@@ -139,8 +142,17 @@ function drawCross(x, y, ps) {
       let colour = crossColour[key];
 
       if (!colour) continue;
+      // louder music, brighter crosses
+      // map the rms value to a brightness value between 40 and 255
+      let brightness = map(rms, 0, 0.3, 40, 255);
 
-      fill(colour[0], colour[1], colour[2]);
+      fill(
+        colour[0],
+        colour[1],
+        colour[2],
+        brightness
+      );
+
       rect(x + c * ps, y + r * ps, ps + 0.5, ps + 0.5);
     }
   }
@@ -160,6 +172,7 @@ function randomiseCrosses() {
 }
 
 function draw() {
+  
     background(10, 10, 10);
     // canvas size
     const cw = width;
@@ -187,6 +200,8 @@ function draw() {
     const pixSize = min(winW / PW, winH / PH);
 // ————————————————————————————————————————————————————
     let rms = analyser.getLevel();
+
+    
     let heartMove = rms * 200;
 
     let heartSize = pixSize;
@@ -199,14 +214,29 @@ function draw() {
 
     drawHeart(leftHeartX, heartY, heartSize, false);
     drawHeart(rightHeartX, heartY, heartSize, true);
+    // ————————————————————————————————————————————————
+    fft.analyze();
+    let high = fft.getEnergy("highMid");
+
+    let shakeX = 0;
+    let shakeY = 0;
+
+    // shake amount changes with screen size
+    let shakeAmount = width * 0.01;
+
+    if (high > 30) {
+      shakeX = random(-shakeAmount, shakeAmount);
+      shakeY = random(-shakeAmount, shakeAmount);
+    }
 
     let crossSize = pixSize * 0.5;
     // draw 10 random crosses
     for (let i = 0; i < badCrosses.length; i++) {
     drawCross(
-        badCrosses[i].x,
-        badCrosses[i].y,
-        crossSize
+        badCrosses[i].x + shakeX,
+        badCrosses[i].y + shakeY,
+        crossSize,
+        rms
     );
     }
 }
