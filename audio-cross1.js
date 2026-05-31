@@ -2,17 +2,23 @@ let openingSong;
 let badSong;
 let goodSong;
 
+let badCrosses = [];
+
 let analyser;
 let playButton;
 
 function preload() {
-  openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
+  openingSong = loadSound("assets/ES_House of a Hundred Rooms - Dream Cave.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  // create 10 random crosses
+  randomiseCrosses();
+  // refresh every 2 seconds
+  setInterval(randomiseCrosses, 2000);
 
   analyser = new p5.Amplitude();
   analyser.setInput(openingSong);
@@ -140,8 +146,21 @@ function drawCross(x, y, ps) {
   }
 }
 
+function randomiseCrosses() {
+
+  badCrosses = [];
+
+  for (let i = 0; i < 10; i++) {
+
+    badCrosses.push({
+      x: random(width * 0.05, width * 0.9),
+      y: random(height * 0.05, height * 0.75)
+    });
+  }
+}
+
 function draw() {
-    background(149, 200, 226);
+    background(10, 10, 10);
     // canvas size
     const cw = width;
     const ch = height;
@@ -180,11 +199,16 @@ function draw() {
 
     drawHeart(leftHeartX, heartY, heartSize, false);
     drawHeart(rightHeartX, heartY, heartSize, true);
-    let crossSize = pixSize*0.5;
-    let crossX = width * 0.5 - (XW * crossSize) / 2;
-    let crossY = height * 0.2;
 
-    drawCross(crossX, crossY, crossSize);
+    let crossSize = pixSize * 0.5;
+    // draw 10 random crosses
+    for (let i = 0; i < badCrosses.length; i++) {
+    drawCross(
+        badCrosses[i].x,
+        badCrosses[i].y,
+        crossSize
+    );
+    }
 }
 
 function windowResized() {
