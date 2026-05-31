@@ -6,6 +6,12 @@ let canvas, ctx, hiddenCanvas, hiddenCtx;
 
 window.addEventListener('load', () => {
   canvas = document.getElementById('pixelCanvas');
+
+  if (!canvas) {
+    console.error('找不到 canvas，请确认 HTML 里有 <canvas id="pixelCanvas"></canvas>');
+    return;
+  }
+
   ctx = canvas.getContext('2d');
 
   hiddenCanvas = document.createElement('canvas');
@@ -17,7 +23,7 @@ window.addEventListener('load', () => {
   };
 
   img.onerror = () => {
-    console.error('无法加载图片，请确认路径是否正确：', imagePath);
+    console.error('图片加载失败，请检查路径：', imagePath);
   };
 
   img.src = imagePath;
@@ -29,13 +35,8 @@ window.addEventListener('load', () => {
 });
 
 function resizeCanvas() {
-  const container = document.querySelector('.canvas-wrapper');
-  const maxWidth = container.clientWidth;
-  const aspectRatio = img.width / img.height || 1;
-  const width = Math.min(maxWidth, img.width);
-
-  canvas.width = width;
-  canvas.height = Math.round(width / aspectRatio);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 
 function drawPixelArt(pixelSize) {
@@ -45,28 +46,55 @@ function drawPixelArt(pixelSize) {
   hiddenCanvas.height = img.height;
   hiddenCtx.drawImage(img, 0, 0, img.width, img.height);
 
-  const scaledWidth = canvas.width;
-  const scaledHeight = canvas.height;
+  const imageAspect = img.width / img.height;
+const canvasAspect = canvas.width / canvas.height;
 
-  ctx.clearRect(0, 0, scaledWidth, scaledHeight);
+let drawWidth, drawHeight;
+
+if (canvasAspect > imageAspect) {
+  drawHeight = canvas.height;
+  drawWidth = drawHeight * imageAspect;
+} else {
+  drawWidth = canvas.width;
+  drawHeight = drawWidth / imageAspect;
+}
+
+const offsetX = (canvas.width - drawWidth) / 2;
+const offsetY = (canvas.height - drawHeight) / 2;
+
+  ctx.clearRect(0, 0, drawWidth, drawHeight);
   ctx.imageSmoothingEnabled = false;
 
-  const scaleX = img.width / scaledWidth;
-  const scaleY = img.height / scaledHeight;
+  const scaleX = img.width / drawWidth;
+  const scaleY = img.height / drawHeight;
 
-  for (let y = 0; y < scaledHeight; y += pixelSize) {
-    for (let x = 0; x < scaledWidth; x += pixelSize) {
+  for (let y = 0; y < drawHeight; y += pixelSize) {
+    for (let x = 0; x < drawWidth; x += pixelSize) {
       const srcX = Math.floor(x * scaleX);
       const srcY = Math.floor(y * scaleY);
-      const sampleWidth = Math.min(Math.ceil(pixelSize * scaleX), img.width - srcX);
-      const sampleHeight = Math.min(Math.ceil(pixelSize * scaleY), img.height - srcY);
 
-      const pixelData = hiddenCtx.getImageData(srcX, srcY, sampleWidth, sampleHeight).data;
+      const sampleWidth = Math.min(
+        Math.ceil(pixelSize * scaleX),
+        img.width - srcX
+      );
+
+      const sampleHeight = Math.min(
+        Math.ceil(pixelSize * scaleY),
+        img.height - srcY
+      );
+
+      const pixelData = hiddenCtx.getImageData(
+        srcX,
+        srcY,
+        sampleWidth,
+        sampleHeight
+      ).data;
 
       let red = 0;
       let green = 0;
       let blue = 0;
       let alpha = 0;
+
       const count = pixelData.length / 4;
 
       for (let i = 0; i < pixelData.length; i += 4) {
@@ -82,7 +110,12 @@ function drawPixelArt(pixelSize) {
       alpha = Math.round((alpha / count / 255) * 100) / 100;
 
       ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
-      ctx.fillRect(x, y, pixelSize, pixelSize);
+      ctx.fillRect(
+  x + offsetX,
+  y + offsetY,
+  pixelSize,
+  pixelSize
+  );
     }
   }
 }
