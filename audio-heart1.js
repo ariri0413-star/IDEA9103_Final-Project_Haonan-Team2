@@ -6,7 +6,7 @@ let analyser;
 let playButton;
 
 function preload() {
-  openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
+  openingSong = loadSound("assets/ES_Ethos - Johannes Bornlof.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
 }
