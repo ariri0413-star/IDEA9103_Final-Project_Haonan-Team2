@@ -185,8 +185,74 @@ function drawCandleGroup(cx, baseY, ps, mirror) {
 }
 
 // ─────────────────────────────────────────────
+// draw animated candle sparks
+function drawSpark(cx, baseY, ps, candleCol, bottomOffset, smallJump, bigJump, mirror) {
 
+  // calculate candle group left edge
+  let x0 = floor(cx - (CW / 2) * ps);
 
+  // choose spark column
+  let col = candleCol;
+
+  // flip spark position for mirrored candles
+  if (mirror) {
+    col = CW - 1 - candleCol;
+  }
+
+  // final x position
+  let x = x0 + col * ps;
+
+  // the bottom pixel of flame touches the top of the candle
+  let bottomY = baseY - bottomOffset * ps;
+
+  // lower two-pixel flame, smaller movement
+  rect(x, bottomY - smallJump, ps, ps);
+  rect(x, bottomY - ps - smallJump, ps, ps);
+
+  // top single-pixel spark, bigger movement
+  rect(x, bottomY - 3 * ps - bigJump, ps, ps);
+}
+// ——————————————————————————————————————————————————
+// draw pixel style light circle behind each candle flame
+function drawHalo(cx, baseY, ps, candleCol, bottomOffset, haloSize, mirror) {
+
+  // calculate candle group left edge
+  let x0 = floor(cx - (CW / 2) * ps);
+
+  // choose candle column
+  let col = candleCol;
+
+  // flip position for mirrored candles
+  if (mirror) {
+    col = CW - 1 - candleCol;
+  }
+
+  // centre position of the halo
+  let centerX = floor(x0 + col * ps + ps / 2);
+  let centerY = floor(baseY - bottomOffset * ps - ps * 1.5);
+
+  // halo block size
+  let block = ps;
+
+  noStroke();
+
+  // draw pixel circle
+  for (let y = -5; y <= 5; y++) {
+    for (let x = -5; x <= 5; x++) {
+
+      // distance from centre
+      let d = sqrt(x * x + y * y);
+
+      // glow
+      if (d < haloSize * 0.55) {
+        fill(252, 223, 37, 45);
+        rect(centerX + x * block, centerY + y * block, block, block);
+      }
+    }
+  }
+}
+
+// ————————————————————————————————————————————————
 function draw() {
 
   // Control different jump strengths for layered flame motion
@@ -230,8 +296,30 @@ function draw() {
     }
   }
 
-  // vertical position of the candles
-  const candleBaseY = cy + actualH / 2 + pixSize * 5;
+    // vertical position of the candles
+    const candleBaseY = cy + actualH / 2 + pixSize * 5;
+
+    // left candle group x position
+    let leftCandleX = marginX + cellW * 0.131;
+
+    // right candle group x position
+    let rightCandleX = marginX + cellW * 2.869;
+
+    // halo size reacts to music volume
+    let haloSize = 4.2 + rms * 30;
+
+    // draw halos 
+    drawHalo(leftCandleX, candleBaseY, pixSize, 4.5, 18, haloSize, false);
+    drawHalo(leftCandleX, candleBaseY, pixSize, 10.5, 17, haloSize * 0.8, false);
+
+    drawHalo(rightCandleX, candleBaseY, pixSize, 5.5, 18, haloSize, true);
+    drawHalo(rightCandleX, candleBaseY, pixSize, 11.5, 17, haloSize * 0.8, true);
+
+    // draw left candle group
+    drawCandleGroup(leftCandleX, candleBaseY, pixSize, false);
+
+    // draw right candle group
+    drawCandleGroup(rightCandleX, candleBaseY, pixSize, true);
 
   // horizontal position of the left candles
   drawCandleGroup(marginX + cellW * 0.131, candleBaseY, pixSize, false);
@@ -240,31 +328,24 @@ function draw() {
   drawCandleGroup(marginX + cellW * 2.869, candleBaseY, pixSize, true);
 
   // ————————————sparks————————————————————
-
-  // left candle spark
+  // spark colour
   fill(252, 223, 37);
 
-  rect(
-  marginX + cellW * 0.0334,
-  candleBaseY - 18 * pixSize - smallJump,
-  pixSize,
-  pixSize
-  );
 
-  rect(
-  marginX + cellW * 0.0334,
-  candleBaseY - 19 * pixSize - smallJump,
-  pixSize,
-  pixSize
-  );
+  // LEFT SIDE
+  // tall candle spark
+  drawSpark(leftCandleX, candleBaseY, pixSize, 5, 18, smallJump, bigJump, false);
 
-  rect(
-  marginX + cellW * 0.0334,
-  candleBaseY - 21 * pixSize - bigJump,
-  pixSize,
-  pixSize
-  );
-}
+  // short candle spark
+  drawSpark(leftCandleX, candleBaseY, pixSize, 11, 16, smallJump, bigJump, false);
+
+  // RIGHT SIDE
+  // tall candle spark
+  drawSpark(rightCandleX, candleBaseY, pixSize, 5, 18, smallJump, bigJump, true);
+
+  // short candle spark
+  drawSpark(rightCandleX, candleBaseY, pixSize, 11, 16, smallJump, bigJump, true);
+  }
 
 // ————————————————————————————————————————————————————————————————————————-
 
