@@ -181,7 +181,7 @@ function randomiseCrosses() {
 // create floating scary texts
 function createScaryTexts() {
 
-  // more texts each time
+  // random amonunt of text between 2 and 5
   let textCount = floor(random(2, 6));
 
   for (let i = 0; i < textCount; i++) {
@@ -253,6 +253,7 @@ function draw() {
     drawHeart(rightHeartX, heartY, heartSize, true);
     // ————————————————————————————————————————————————
     fft.analyze();
+    // get energy of hight mid frequencis, the value will be between 0 and 255
     let high = fft.getEnergy("highMid");
 
     let shakeX = 0;
@@ -278,11 +279,12 @@ function draw() {
     }
     // ————————————————————————————————————————————————
     // create more texts during strong high frequency
-    if (high > 30 && frameCount % 10 === 0) {
+    if (high > 60 && frameCount % 10 === 0) {
       createScaryTexts();
     }
 
     // draw scary texts
+    // ChatGPT helped me writing the for loop below, which iterates through the scaryTexts array in reverse order
     for (let i = scaryTexts.length - 1; i >= 0; i--) {
 
       let t = scaryTexts[i];
