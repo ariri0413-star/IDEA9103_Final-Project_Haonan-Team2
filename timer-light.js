@@ -1,4 +1,4 @@
-// light of heaven
+// rotating light of heaven
 let angle = 0;
 const NUM_RAYS = 24;
 const PIXEL_SIZE = 6;
@@ -16,7 +16,6 @@ const YELLOW_TONES = [
   [255, 252, 195],
   [255, 252, 233],
 ];
-
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
