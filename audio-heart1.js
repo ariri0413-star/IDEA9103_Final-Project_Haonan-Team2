@@ -105,7 +105,8 @@ function draw() {
     let heartSize = pixSize;
 
     let leftHeartX = width * 0.03;
-    let rightHeartX = width * 0.9;
+    // Chatgpt helped calculate the right heart's x position so that it would be perfectly symmetrical to the left one
+    let rightHeartX = width - leftHeartX - HW * heartSize;
 
     let heartY = height * 0.45 - heartMove;
 
