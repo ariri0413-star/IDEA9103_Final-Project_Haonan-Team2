@@ -16,6 +16,19 @@ function preload() {
   badSong = loadSound(
     "assets/ES_House of a Hundred Rooms - Dream Cave.wav"
   );
+  // button sound effects
+  hoverSound = loadSound(
+    "assets/hover.wav"
+  );
+  playClickSound = loadSound(
+    "assets/play-click.wav"
+  );
+  goodClickSound = loadSound(
+    "assets/good-click.wav"
+  );
+  badClickSound = loadSound(
+    "assets/bad-click.wav"
+  );
 }
 
 
