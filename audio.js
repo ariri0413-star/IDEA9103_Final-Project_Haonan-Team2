@@ -12,6 +12,14 @@ let analyser;
 let fft;
 // play / pause button
 let playButton;
+// hover sound for buttons
+let hoverSound;
+// click sound for play / pause button
+let playClickSound;
+// click sound for good ending button
+let goodClickSound;
+// click sound for bad ending button
+let badClickSound;
 
 
 // initialise audio system
@@ -55,8 +63,15 @@ function createAudioButton() {
   playButton = createButton("Play/Pause");
   // button position
   playButton.position(width * 0.02, height * 0.03);
-  // button click function
-  playButton.mousePressed(playPause);
+  // button press function
+  playButton.mousePressed(function() {
+  playButtonClickSound("play");
+  playPause();
+ });
+  // button hover function  
+  playButton.mouseOver(function() {
+  playHoverSound();
+ });
 }
 
 
@@ -73,6 +88,28 @@ function playPause() {
   } else {
     currentMusic.loop();
     playButton.html("Pause");
+  }
+}
+
+// play hover sound
+function playHoverSound() {
+  if (hoverSound && !hoverSound.isPlaying()) {
+    hoverSound.play();
+  }
+}
+
+// play different click sounds
+function playButtonClickSound(type) {
+  if (type === "play" && playClickSound) {
+    playClickSound.play();
+  }
+
+  if (type === "good" && goodClickSound) {
+    goodClickSound.play();
+  }
+
+  if (type === "bad" && badClickSound) {
+    badClickSound.play();
   }
 }
 
