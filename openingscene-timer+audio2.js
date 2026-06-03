@@ -12,13 +12,13 @@ let goodSong;
 let analyser;
 // Play / pause button
 let playButton;
-let img;
+let openingNun;
 // preload the music
 function preload() {
   openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
-  img = loadImage("image/nun1.png");
+  openingNun = loadImage("image/nun1.png");
 }
 
 function setup() {
@@ -540,27 +540,27 @@ function draw() {
   let displayH = height * 0.88;
 
   let displayW =
-    displayH * (img.width / img.height);
+    displayH * (openingNun.width / openingNun.height);
 
   if (displayW > width * 0.88) {
 
     displayW = width * 0.88;
 
     displayH =
-      displayW * (img.height / img.width);
+      displayW * (openingNun.height / openingNun.width);
 
   }
 
-  // smaller size
-  displayW *= 0.8;
-  displayH *= 0.8;
+  // change size or keep
+  displayW *= 1.1;
+  displayH *= 1.1;
 
   // center position
   let startX = width / 2 - displayW / 2;
 
-  let startY = height / 2 - displayH / 2 - height * 0.07;
+  let startY = height - displayH;
 
-  img.loadPixels();
+  openingNun.loadPixels();
 
   for (
     let y = 0;
@@ -574,24 +574,24 @@ function draw() {
       x += nunPixelSize
     ) {
 
-      let imgX = floor(
-        map(x, 0, displayW, 0, img.width)
+      let openingNunX = floor(
+        map(x, 0, displayW, 0, openingNun.width)
       );
 
-      let imgY = floor(
-        map(y, 0, displayH, 0, img.height)
+      let openingNunY = floor(
+        map(y, 0, displayH, 0, openingNun.height)
       );
 
       let index =
-        (imgY * img.width + imgX) * 4;
+        (openingNunY * openingNun.width + openingNunX) * 4;
 
-      let r = img.pixels[index];
+      let r = openingNun.pixels[index];
 
-      let g = img.pixels[index + 1];
+      let g = openingNun.pixels[index + 1];
 
-      let b = img.pixels[index + 2];
+      let b = openingNun.pixels[index + 2];
 
-      let a = img.pixels[index + 3];
+      let a = openingNun.pixels[index + 3];
 
       if (a < 10) continue;
 
