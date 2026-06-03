@@ -306,7 +306,7 @@ function createScaryTexts() {
 
 function draw() {
   
-    background(10, 10, 10);
+    background(24, 18, 35);
     // canvas size
     const cw = width;
     const ch = height;
@@ -463,7 +463,91 @@ function draw() {
     );
   }
 }
+// ─────────────────────────────
+    // nun image
 
+  let nunPixelSize = pixSize * 0.6;
+
+  let displayH = height * 0.88;
+
+  let displayW =
+    displayH * (badNun.width / badNun.height);
+
+  if (displayW > width * 0.88) {
+
+    displayW = width * 0.88;
+
+    displayH =
+      displayW * (badNun.height / badNun.width);
+
+  }
+
+  // smaller size
+  displayW *= 0.8;
+  displayH *= 0.8;
+
+  // center position
+  let startX = width / 2 - displayW / 2;
+
+  let startY = height / 2 - displayH / 2 - height * 0.07;
+
+  badNun.loadPixels();
+
+  for (
+    let y = 0;
+    y < displayH;
+    y += nunPixelSize
+  ) {
+
+    for (
+      let x = 0;
+      x < displayW;
+      x += nunPixelSize
+    ) {
+
+      let badNunX = floor(
+        map(x, 0, displayW, 0, badNun.width)
+      );
+
+      let badNunY = floor(
+        map(y, 0, displayH, 0, badNun.height)
+      );
+
+      let index =
+        (badNunY * badNun.width + badNunX) * 4;
+
+      let r = badNun.pixels[index];
+
+      let g = badNun.pixels[index + 1];
+
+      let b = badNun.pixels[index + 2];
+
+      let a = badNun.pixels[index + 3];
+
+      if (a < 10) continue;
+
+      // random red glitch pixels
+      if (random(1) < 0.002) {
+
+      r = 255;
+      g = 40;
+      b = 40;
+      }
+
+      noStroke();
+
+      fill(r*1.4, g*1.2, b*1.2, a);
+
+      rect(
+        startX + x - shakeX,
+        startY + y - shakeY,
+        nunPixelSize,
+        nunPixelSize
+      );
+
+    }
+
+  }
 }
 
 function windowResized() {
