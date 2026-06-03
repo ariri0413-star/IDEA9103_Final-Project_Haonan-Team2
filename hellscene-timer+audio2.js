@@ -482,14 +482,14 @@ function draw() {
 
   }
 
-  // smaller size
-  displayW *= 0.8;
-  displayH *= 0.8;
+  // change size or keep
+  displayW *= 1.1;
+  displayH *= 1.1;
 
   // center position
   let startX = width / 2 - displayW / 2;
 
-  let startY = height / 2 - displayH / 2 - height * 0.07;
+  let startY = height - displayH;
 
   badNun.loadPixels();
 
