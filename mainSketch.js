@@ -1,5 +1,9 @@
 // current scene
 let scene = "opening";
+// nun images
+let openingNun;
+let goodNun;
+let badNun;
 
 
 // preload assets
@@ -28,6 +32,16 @@ function preload() {
   );
   badClickSound = loadSound(
     "assets/bad-click.wav"
+  );
+  // nun images
+  openingNun = loadImage(
+    "image/nun1.png"
+  );
+  goodNun = loadImage(
+    "image/nun2.png"
+  );
+  badNun = loadImage(
+    "image/angel.png"
   );
 }
 
