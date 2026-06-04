@@ -1,13 +1,9 @@
-//hell
-
 let openingSong;
 let badSong;
 let goodSong;
 
 let badCrosses = [];
 let scaryTexts = [];
-let eyes = [];
-
 let textPool = [
   "God knows the truth",
   "GUILTY",
@@ -17,25 +13,19 @@ let textPool = [
 let analyser;
 let fft;
 let playButton;
-let badNun;
 
 function preload() {
   openingSong = loadSound("assets/ES_House of a Hundred Rooms - Dream Cave.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
-  badNun = loadImage("image/nun2.png");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  noSmooth();
-
   // create 10 random crosses
   randomiseCrosses();
   // refresh every 2 seconds
   setInterval(randomiseCrosses, 2000);
-
-  createEyes(7);
 
   analyser = new p5.Amplitude();
   analyser.setInput(openingSong);
@@ -45,7 +35,126 @@ function setup() {
   playButton = createButton("Play/Pause");
   playButton.position(width * 0.02, height * 0.03);
   playButton.mousePressed(playPause);
+
+  setupBlood();
 }
+
+let bloodDrops = [];
+
+function setupBlood() {
+
+  bloodDrops = [];
+
+  // Set blood amount based on screen width
+  let dropCount = floor(width * 0.03);
+
+  for (let i = 0; i < dropCount; i++) {
+
+    bloodDrops.push({
+
+      x: random(width),
+
+      y: random(-height, height),
+
+      // Blood falling speed
+      speed: random(height * 0.001, height * 0.004),
+
+      // Blood trail length
+      length: random(height * 0.05, height * 0.18),
+
+      // Blood trail width
+      thickness: random(width * 0.003, width * 0.01),
+
+      // Noise offset for movement
+      offset: random(1000)
+
+    });
+
+  }
+}
+
+function drawBloodFlow() {
+
+  noStroke();
+
+  for (let i = 0; i < bloodDrops.length; i++) {
+
+    let drop = bloodDrops[i];
+
+    // Use Perlin noise for horizontal movement
+    let wiggle = map(
+      noise(drop.offset),
+      0,
+      1,
+      -width * 0.005,
+      width * 0.005
+    );
+
+    // Draw blood trail
+    fill(90, 0, 0, 170);
+
+    rect(
+      drop.x + wiggle,
+      drop.y,
+      drop.thickness,
+      drop.length
+    );
+
+    // Draw square blood block at the bottom
+    fill(170, 0, 0, 220);
+
+    rect(
+      drop.x + wiggle - drop.thickness * 0.25,
+      drop.y + drop.length,
+      drop.thickness * 1.5,
+      drop.thickness * 1.5
+    );
+
+    // Move blood downward
+    drop.y += drop.speed;
+
+    // Update noise value
+    drop.offset += 0.01;
+
+    // Reset blood when it leaves the screen
+    if (drop.y > height + 100) {
+
+      drop.y = random(-height * 0.3, 0);
+
+      drop.x = random(width);
+
+    }
+  }
+}
+
+// colour palette for heart
+const heartColour = {
+  'n': null,
+  'y1': [252, 218, 123],    // ring
+  'y2': [254, 182, 5],  // ring
+  'y3': [248, 168, 18],  // ring
+  'r1': [250, 5, 6], // heart
+  'r2': [252, 124, 124], // heart
+  'r3':[253, 197, 200], //heart
+  'r4':[254, 118, 119], //heart
+  'r5':[255, 22, 21], //heart
+  'r6':[197, 6, 6], //heart
+};
+
+const heart = [
+  ['n','n','n','y1','y2','y3','n','n','n'], // row 1
+  ['n','n','n','n','n','n','n','n','n'],    // row 2
+  ['n','r1','r1','n','n','n','r1','r6','n'], // row 3
+  ['r1','r2','r2','r1','n','r1','r1','r1','r6'], // row 4
+  ['r1','r2','r3','r3','r1','r1','r1','r1','r6'], // row 5
+  ['n','r1','r3','r4','r1','r1','r1','r6','n'], // row 6
+  ['n','n','r1','r1','r1','r1','r6','n','n'], // row 7
+  ['n','n','n','r1','r1','r6','n','n','n'], // row 8
+  ['n','n','n','n','r6','n','n','n','n'], // row 9
+];
+
+const HW = heart[0].length;
+const HH = heart.length;
 
 // ——————————————————————————————————————————————
 
@@ -92,70 +201,33 @@ const cross = [
 const XW = cross[0].length;
 const XH = cross.length;
 
+// ——————————————————————————————————————————————
+// Chatgpt helped me with the code below, generating a mirror heart.
+
+function drawHeart(x, y, ps, mirror) {
+  noStroke();
+
+  for (let r = 0; r < HH; r++) {
+    for (let c = 0; c < HW; c++) {
+
+      let col = c;
+
+      if (mirror) {
+        col = HW - 1 - c;
+      }
+
+      let key = heart[r][col];
+      let colour = heartColour[key];
+
+      if (!colour) continue;
+
+      fill(colour[0], colour[1], colour[2]);
+      rect(x + c * ps, y + r * ps, ps + 0.5, ps + 0.5);
+    }
+  }
+}
+
 // ——————————————————————————————————————————————————
-
-// eye
-
-const eyeColour = {
-  'n': null,
-  'f': [110, 4, 0],
-  'p': [242, 178, 181],
-  'r': [240, 113, 108],
-  'w': [255, 255, 255],
-  'b': [0, 0, 0],
-  'd': [55, 123, 31],
-  'g': [85, 180, 53],
-};
-
-const eyeWhiteTemplate = [
-  [ 'n','n','n','n','n','n','f','f','f','f','f','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','f','f','p','p','r','p','p','f','f','n','n','n','n' ],
-  [ 'n','n','n','f','p','p','w','r','w','w','w','p','p','f','n','n','n' ],
-  [ 'n','n','f','p','w','w','w','r','w','w','w','w','w','r','f','n','n' ],
-  [ 'n','f','p','w','w','w','w','w','r','w','w','w','r','p','p','f','n' ],
-  [ 'n','f','p','w','w','w','w','w','w','w','w','r','w','w','r','f','n' ],
-  [ 'f','r','w','w','w','w','w','w','w','w','w','w','w','w','w','p','f' ],
-  [ 'f','p','r','w','w','w','w','w','w','w','w','w','w','w','w','p','f' ],
-  [ 'f','p','w','r','r','r','w','w','w','w','w','w','w','r','r','p','f' ],
-  [ 'f','p','w','w','w','w','w','w','w','w','w','w','r','w','w','r','f' ],
-  [ 'f','r','w','w','w','w','r','w','w','w','w','w','w','w','w','p','f' ],
-  [ 'n','f','p','w','w','r','w','w','w','w','w','r','w','w','p','f','n' ],
-  [ 'n','f','p','w','r','w','w','w','r','w','w','w','r','w','p','f','n' ],
-  [ 'n','n','f','r','w','w','w','w','r','w','w','w','w','r','f','n','n' ],
-  [ 'n','n','n','f','p','p','w','r','w','w','w','p','p','f','n','n','n' ],
-  [ 'n','n','n','n','f','f','r','p','p','p','p','f','f','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','f','f','f','f','f','n','n','n','n','n','n' ]
-];
-
-const pupilTemplate = [
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','b','b','b','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','b','d','d','d','b','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','b','d','g','g','g','d','b','n','n','n','n','n' ],
-  [ 'n','n','n','n','b','d','g','b','w','w','g','d','b','n','n','n','n' ],
-  [ 'n','n','n','n','b','d','g','b','b','w','g','d','b','n','n','n','n' ],
-  [ 'n','n','n','n','b','d','g','b','b','b','g','d','b','n','n','n','n' ],
-  [ 'n','n','n','n','n','b','d','g','g','g','d','b','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','b','d','d','d','b','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','b','b','b','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ]
-];
-
-const pupilColours = [
-  { d: [55, 123, 31], g: [85, 180, 53] },
-  { d: [35, 90, 160], g: [90, 170, 255] },
-  { d: [120, 50, 150], g: [210, 130, 255] },
-  { d: [130, 70, 20], g: [220, 140, 60] },
-  { d: [120, 20, 40], g: [240, 80, 100] },
-  { d: [90, 70, 160], g: [160, 150, 255] },
-  { d: [20, 120, 120], g: [90, 230, 220] }
-];
 
 function drawCross(x, y, ps, rms) {
   noStroke();
@@ -195,85 +267,7 @@ function randomiseCrosses() {
   }
 }
 
-// create random eyes with different sizes and non-overlapping positions
-function createEyes(num) {
-  eyes = [];
-
-  let attempts = 0;
-  const maxAttempts = 1000;
-
-  while (eyes.length < num && attempts < maxAttempts) {
-    attempts++;
-
-    const minSize = max(3, min(width, height) * 0.012);
-    const maxSize = max(5, min(width, height) * 0.022);
-    const ps = random(minSize, maxSize);
-
-    const eyeW = 17 * ps;
-    const eyeH = 17 * ps;
-
-    const newEye = {
-      x: random(0, width - eyeW),
-      y: random(0, height - eyeH),
-      ps: ps,
-      w: eyeW,
-      h: eyeH,
-      pupilOffsetX: 0,
-      pupilOffsetY: 0,
-      pupilColour: pupilColours[eyes.length]
-    };
-
-    let overlapping = false;
-
-    for (let existingEye of eyes) {
-      if (isOverlapping(newEye, existingEye)) {
-        overlapping = true;
-        break;
-      }
-    }
-
-    if (!overlapping) {
-      eyes.push(newEye);
-    }
-  }
-}
-
-// check whether two eyes overlap on the canvas
-function isOverlapping(a, b) {
-  const padding = max(2, min(width, height) * 0.01);
-
-  return !(
-    a.x + a.w + padding < b.x ||
-    a.x > b.x + b.w + padding ||
-    a.y + a.h + padding < b.y ||
-    a.y > b.y + b.h + padding
-  );
-}
-
-function drawPixelTemplate(template, x, y, ps, colourMap) {
-  const s = ceil(ps);
-  noStroke();
-
-  for (let r = 0; r < template.length; r++) {
-    for (let c = 0; c < template[r].length; c++) {
-      const key = template[r][c];
-      const col = colourMap[key];
-
-      if (!col) continue;
-
-      fill(col[0], col[1], col[2]);
-      rect(
-        floor(x + c * ps),
-        floor(y + r * ps),
-        s,
-        s
-      );
-    }
-  }
-}
-
 // ________________________________________________
-
 // create floating scary texts
 function createScaryTexts() {
 
@@ -312,6 +306,7 @@ function draw() {
     const ch = height;
 
     // ————————————————————————————————-
+
     // old church window scaling system
     const cols = 3;
 
@@ -330,11 +325,22 @@ function draw() {
     const winH = availH * 0.90;
 
     const pixSize = min(winW / PW, winH / PH);
-
-    // ————————————————————————————————-
-
+// ————————————————————————————————————————————————————
     let rms = analyser.getLevel();
 
+    
+    let heartMove = rms * 200;
+
+    let heartSize = pixSize;
+
+    let leftHeartX = width * 0.03;
+    // ChatGPT helped calculated the position of the right heart, making it mirror the left one.
+    let rightHeartX = width - leftHeartX - HW * heartSize;
+
+    let heartY = height * 0.45 - heartMove;
+
+    drawHeart(leftHeartX, heartY, heartSize, false);
+    drawHeart(rightHeartX, heartY, heartSize, true);
     // ————————————————————————————————————————————————
     fft.analyze();
     // get energy of hight mid frequencis, the value will be between 0 and 255
@@ -349,30 +355,6 @@ function draw() {
     if (high > 30) {
       shakeX = random(-shakeAmount, shakeAmount);
       shakeY = random(-shakeAmount, shakeAmount);
-    }
-
-    for (let eye of eyes) {
-      if (frameCount % 40 === 0) {
-        eye.pupilOffsetX = random(-1.5, 1.5) * eye.ps;
-        eye.pupilOffsetY = random(-1.2, 1.2) * eye.ps;
-      }
-
-      drawPixelTemplate(eyeWhiteTemplate, eye.x + shakeX, eye.y + shakeY, eye.ps, eyeColour);
-
-      // replace the default green colours with this eye's unique pupil colours
-      const customPupilColour = {
-        ...eyeColour,
-        d: eye.pupilColour.d,
-        g: eye.pupilColour.g
-      };
-
-      drawPixelTemplate(
-        pupilTemplate,
-        eye.x + eye.pupilOffsetX + shakeX,
-        eye.y + eye.pupilOffsetY + shakeY,
-        eye.ps,
-        customPupilColour
-      );
     }
 
     let crossSize = pixSize * 0.5;
@@ -426,7 +408,7 @@ function draw() {
   // ——————————————————————————————————————————
 
   // glitch vertical lines
-   if (high > 55) {
+   if (high > 80) {
 
   // how many lines
   let lineCount = floor(random(5, 20));
@@ -448,8 +430,8 @@ function draw() {
     // random colour
     fill(
       random(180, 255),
-      random(180, 255),
-      random(180, 255),
+      random(0, 50),
+      random(0, 50),
       lineAlpha
     );
 
@@ -464,15 +446,15 @@ function draw() {
   }
 }
 
+  drawBloodFlow();
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 
-  randomiseCrosses();
-  createEyes(7);
-
   playButton.position(width * 0.02, height * 0.03);
+    // Recalculate blood system
+  setupBlood();
 }
 
 function playPause() {
