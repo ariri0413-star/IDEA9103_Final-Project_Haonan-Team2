@@ -75,7 +75,7 @@ ChatGPT was used to assist with specific coding tasks in this project. It helped
 
 All AI-assisted code was reviewed, tested, and modified by the group members before being included in the final project. The code was adjusted to fit our visual design, scene layout, and p5.js project structure.
 
-## 5. External references:
+## 5. External references
 
 ## 6. Interaction instructions
 
