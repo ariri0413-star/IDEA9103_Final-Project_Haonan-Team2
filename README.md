@@ -49,6 +49,12 @@ In the hell scene, each pupil randomly shifts to a new position every 40 frames,
 
 In the heaven scene, blue and yellow light rays rotate over time by updating the angle value every frame. And wings continuously fly from one side of the window to the other. These animations build a sense of spiritual elevation, creating a contrast with the darker scene of the project. 
 
+![Sketch](image/FloatingCrosses+Spider.png)
+*Floating Crosses and Moving Spider*
+
+![Sketch](image/WatchingEyes.png)
+*Watching Eyes*
+
 ![Sketch](image/LightRays+Wings.png)
 *Rotating Light Rays and Flying Wings*
 
