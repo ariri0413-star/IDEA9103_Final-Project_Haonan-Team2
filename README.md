@@ -68,7 +68,7 @@ During key moments in the narrative, the player must make choices for the nun: w
 
 During these visual transformations, players can also interact with the glitch effects through mouse movement, causing distorted areas to spread, shake, or briefly return to normal. This allows players to participate more directly in the changing state of the world. The mechanic ensures that players are not simply watching the nun’s psychological struggle, but actively participating in the transformation of her emotions and fate. Through interaction, players can experience how their choices gradually reshape the world, reinforcing the project’s themes of self-deception, guilt, and emotional consequences.
 
-![Sketch](image/UserInput1.png)
+![Sketch](image/userinput2.png)
 
 ## 4. AI acknowledgement
 ChatGPT was used to assist with specific coding tasks in this project. It helped calculate the pixel grid size so that visual elements could keep the same scale across different screen sizes and scenes. It was also used to help generate mirrored pixel images, such as candles or decorative objects, so the left and right sides of the scene could match visually. In addition, ChatGPT mainly helped with position calculations for visual elements, including calculating symmetrical positions, spacing between objects, and responsive placement based on the canvas size. This helped visual elements stay aligned and balanced across different scenes.
