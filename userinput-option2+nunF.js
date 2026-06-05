@@ -15,41 +15,39 @@ let playButton;
 let openingNun;
 
 let myFont;
-let angelPower = 1;
-let bloodPower = 1;
-let glitchPower = 1;
+let confessProgress = 0;
+let deceiveProgress = 0;
+let holyFloatItems = [];
 
 // preload the music
 function preload() {
+
   openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   openingNun = loadImage("image/nun1.png");
+
   myFont = loadFont("font/Micro.otf");
+
 }
 
 function setup() {
 
   createCanvas(windowWidth, windowHeight);
-
   frameRate(30);
-
   noSmooth();
 
   noCursor();
-
   textFont(myFont);
 
   initCrosses();
+  initHolyFloatItems();
 
   analyser = new p5.Amplitude();
-
   analyser.setInput(openingSong);
 
   playButton = createButton("Play/Pause");
-
   playButton.position(width * 0.02, height * 0.03);
-
   playButton.mousePressed(playPause);
 
 }
@@ -427,8 +425,6 @@ function drawSpider(ps, cw, offsetY) {
 // draw!! :P
 function draw() {
 
-  rectMode(CORNER);
-  
   // Control different jump strengths for layered flame motion
   let rms = analyser.getLevel();
   let smallJump = rms * 80;
@@ -630,38 +626,7 @@ function draw() {
     }
 
   }
-  // ─────────────────────────────
-
-  // Mouse choice layer on top
-
-  push();
-
-  updateMousePower();
-
-  drawAngelScreenGlow(angelPower);
-
-  drawScreenGlitch(glitchPower);
-
-  let titleSize = constrain(width * 0.06, 32, 90);
-
-  let confessX = width * 0.28;
-
-  let deceiveX = width * 0.72;
-
-  let optionY = height * 0.5;
-
-  drawPixelHolySymbols(confessX, optionY, titleSize, angelPower);
-
-  drawBloodAroundText(deceiveX, optionY, titleSize, bloodPower);
-
-  drawOption("Confess", confessX, optionY, titleSize);
-
-  drawOption("Deceive", deceiveX, optionY, titleSize);
-
-  drawPixelCursor();
-
-  pop();
-
+  drawChoiceLayer();
 }
 
 // resize and redraw when browser window changes size
@@ -682,263 +647,137 @@ function playPause() {
   }
 }
 
-function updateMousePower() {
+// ─────────────────────────────────────────────
 
-  let leftZone = width / 3;
+// Mouse choice layer
 
-  let rightZone = width * 2 / 3;
+// ─────────────────────────────────────────────
 
-  if (mouseX < leftZone) {
+function drawChoiceLayer() {
 
-    let amt = map(mouseX, 0, leftZone, 1, 0);
+  let titleSize = constrain(width * 0.06, 32, 90);
 
-    angelPower = lerp(angelPower, 1 + amt * 1.5, 0.08);
+  let confessX = width * 0.28;
 
-    bloodPower = lerp(bloodPower, 1 - amt, 0.08);
+  let deceiveX = width * 0.72;
 
-    glitchPower = lerp(glitchPower, 1 - amt, 0.08);
+  let optionY = height * 0.5;
 
-  } else if (mouseX > rightZone) {
+  updateHoverProgress(confessX, deceiveX, optionY, titleSize);
 
-    let amt = map(mouseX, rightZone, width, 0, 1);
+  drawOptionEffect(
 
-    angelPower = lerp(angelPower, 1 - amt, 0.08);
+    "Confess",
 
-    bloodPower = lerp(bloodPower, 1 + amt * 1.8, 0.08);
+    confessX,
 
-    glitchPower = lerp(glitchPower, 1 + amt * 2.2, 0.08);
+    optionY,
+
+    titleSize,
+
+    confessProgress,
+
+    "holy"
+
+  );
+
+  drawOptionEffect(
+
+    "Deceive",
+
+    deceiveX,
+
+    optionY,
+
+    titleSize,
+
+    deceiveProgress,
+
+    "blood"
+
+  );
+
+  drawPixelCursor();
+
+}
+
+// 鼠标停留进度控制
+
+function updateHoverProgress(confessX, deceiveX, optionY, titleSize) {
+
+  textFont(myFont);
+
+  textSize(titleSize);
+
+  let confessW = textWidth("Confess");
+
+  let deceiveW = textWidth("Deceive");
+
+  let hoverConfess =
+
+    mouseX > confessX - confessW / 2 - 30 &&
+
+    mouseX < confessX + confessW / 2 + 30 &&
+
+    mouseY > optionY - titleSize / 2 - 25 &&
+
+    mouseY < optionY + titleSize / 2 + 25;
+
+  let hoverDeceive =
+
+    mouseX > deceiveX - deceiveW / 2 - 30 &&
+
+    mouseX < deceiveX + deceiveW / 2 + 30 &&
+
+    mouseY > optionY - titleSize / 2 - 25 &&
+
+    mouseY < optionY + titleSize / 2 + 25;
+
+  if (hoverConfess) {
+
+    confessProgress += 0.015;
 
   } else {
 
-    angelPower = lerp(angelPower, 1, 0.08);
-
-    bloodPower = lerp(bloodPower, 1, 0.08);
-
-    glitchPower = lerp(glitchPower, 1, 0.08);
+    confessProgress -= 0.025;
 
   }
 
-  angelPower = constrain(angelPower, 0, 2.5);
+  if (hoverDeceive) {
 
-  bloodPower = constrain(bloodPower, 0, 3);
+    deceiveProgress += 0.015;
 
-  glitchPower = constrain(glitchPower, 0, 3.5);
+  } else {
+
+    deceiveProgress -= 0.025;
+
+  }
+
+  confessProgress = constrain(confessProgress, 0, 1);
+
+  deceiveProgress = constrain(deceiveProgress, 0, 1);
 
 }
 
-function drawAngelScreenGlow(power) {
+function drawOptionEffect(label, x, y, size, progress, type) {
 
-  if (power <= 0.05) return;
+  if (type === "holy") {
 
-  rectMode(CORNER);
+    drawHolyHoverEffect(x, y, size, progress);
 
-  noStroke();
+  } else {
 
-  let alpha = map(power, 1, 2.5, 0, 35);
-
-  alpha = constrain(alpha, 0, 35);
-
-  fill(255, 190, 210, alpha);
-
-  rect(0, 0, width, height);
-
-  if (power > 1) {
-
-    for (let i = 0; i < 60 * (power - 1); i++) {
-
-      let px = random(width);
-
-      let py = random(height);
-
-      let s = random([6, 8, 10, 12, 16]);
-
-      if (random() < 0.5) {
-
-        fill(255, 230, 130, random(20, 60) * power);
-
-      } else {
-
-        fill(255, 150, 210, random(15, 55) * power);
-
-      }
-
-      rect(px, py, s, s);
-
-    }
+    drawBloodHoverEffect(x, y, size, progress);
 
   }
+
+  drawOptionTextFill(label, x, y, size, progress, type);
 
 }
 
-function drawPixelHolySymbols(x, y, size, power) {
+// 文字内部进度条效果
 
-  if (power <= 0.03) return;
-
-  rectMode(CENTER);
-
-  noStroke();
-
-  textSize(size);
-
-  let t = frameCount * 0.03;
-
-  for (let i = 0; i < 90 * power; i++) {
-
-    let px = random(width);
-
-    let py = random(height);
-
-    px += sin(t * 2 + i) * 8;
-
-    py += cos(t * 1.5 + i) * 8;
-
-    let s = random([4, 5, 6, 8]);
-
-    if (random() < 0.5) {
-
-      fill(255, 225, 120, random(25, 75) * power);
-
-    } else {
-
-      fill(255, 150, 205, random(20, 65) * power);
-
-    }
-
-    rect(px, py, s, s);
-
-  }
-
-  for (let i = 0; i < 45 * power; i++) {
-
-    let angle = random(TWO_PI);
-
-    let radius = random(size * 0.8, size * 3.2 * power);
-
-    let px = x + cos(angle) * radius;
-
-    let py = y + sin(angle) * radius;
-
-    let s = random([5, 7, 9]);
-
-    if (random() < 0.55) {
-
-      fill(255, 230, 130, random(70, 150) * power);
-
-    } else {
-
-      fill(255, 160, 210, random(55, 130) * power);
-
-    }
-
-    rect(px, py, s, s);
-
-  }
-
-}
-
-function drawBloodAroundText(x, y, size, power) {
-
-  if (power <= 0.03) return;
-
-  rectMode(CENTER);
-
-  noStroke();
-
-  textSize(size);
-
-  let textW = textWidth("Deceive");
-
-  let boxW = textW + size * 1.4;
-
-  let boxH = size * 1.6;
-
-  for (let i = 0; i < 90 * power; i++) {
-
-    let side = random() < 0.5 ? -1 : 1;
-
-    let px = x + side * random(boxW * 0.45, boxW * 0.95);
-
-    let py = y + random(-boxH * 0.7, boxH * 0.7);
-
-    let s = random([4, 6, 8, 10]);
-
-    fill(255, 0, 20, random(90, 220) * power);
-
-    rect(px, py, s, s);
-
-  }
-
-  for (let i = 0; i < 18 * power; i++) {
-
-    let side = random() < 0.5 ? -1 : 1;
-
-    let startX = x + side * random(boxW * 0.4, boxW * 0.75);
-
-    let startY = y - boxH * 0.4 + random(-20, 25);
-
-    let dripLength = random(50, 170) * power;
-
-    let blockSize = random([5, 7, 9]);
-
-    for (let j = 0; j < dripLength; j += blockSize * 1.4) {
-
-      let offsetX = noise(i * 0.3, j * 0.05, frameCount * 0.01) * 35 - 17;
-
-      let px = startX + offsetX;
-
-      let py = startY + j;
-
-      if (random() > 0.18) {
-
-        fill(220, 0, 25, random(120, 255) * power);
-
-        rect(px, py, blockSize, blockSize);
-
-      }
-
-    }
-
-    fill(180, 0, 20, 220 * power);
-
-    rect(startX + random(-12, 12), startY + dripLength, blockSize * 2, blockSize * 2);
-
-  }
-
-}
-
-function drawScreenGlitch(power) {
-
-  if (power <= 0.15) return;
-
-  rectMode(CORNER);
-
-  noStroke();
-
-  let glitchAmount = floor(8 * power);
-
-  for (let i = 0; i < glitchAmount; i++) {
-
-    if (random() < 0.18 * power) {
-
-      let gy = random(height);
-
-      let h = random(3, 12);
-
-      let gx = random(width);
-
-      let w = random(30, 160) * power;
-
-      fill(255, 0, 20, 45 * power);
-
-      rect(gx, gy, w, h);
-
-    }
-
-  }
-
-}
-
-function drawOption(label, x, y, size) {
+function drawOptionTextFill(label, x, y, size, progress, type) {
 
   push();
 
@@ -948,7 +787,11 @@ function drawOption(label, x, y, size) {
 
   textSize(size);
 
-  fill(0);
+  let textW = textWidth(label);
+
+  let textH = size * 1.1;
+
+  fill(0, 180);
 
   text(label, x + 5, y + 5);
 
@@ -956,12 +799,357 @@ function drawOption(label, x, y, size) {
 
   text(label, x, y);
 
+  drawingContext.save();
+
+  let clipX = x - textW / 2;
+
+  let clipY = y - textH / 2;
+
+  let clipW = textW * progress;
+
+  let clipH = textH;
+
+  drawingContext.beginPath();
+
+  drawingContext.rect(clipX, clipY, clipW, clipH);
+
+  drawingContext.clip();
+
+  if (type === "holy") {
+
+    fill(255, 230, 120);
+
+  } else {
+
+    fill(255, 30, 45);
+
+  }
+
+  text(label, x, y);
+
+  drawingContext.restore();
+
+  if (progress > 0.7) {
+
+    let glowAlpha = map(progress, 0.7, 1, 0, 160);
+
+    if (type === "holy") {
+
+      fill(255, 240, 150, glowAlpha);
+
+    } else {
+
+      fill(255, 0, 30, glowAlpha);
+
+    }
+
+    text(label, x + random(-1.5, 1.5), y + random(-1.5, 1.5));
+
+  }
+
   pop();
 
 }
 
+// Confess：充能时文字附近出现圣光，满了之后全屏漂浮小元素
+
+function drawHolyHoverEffect(x, y, size, progress) {
+
+  if (progress <= 0.02) return;
+
+  rectMode(CENTER);
+
+  noStroke();
+
+  if (progress < 1) {
+
+    let amount = 8 + progress * 35;
+
+    for (let i = 0; i < amount; i++) {
+
+      let px = x + random(-size * 1.8, size * 1.8);
+
+      let py = y + random(-size * 0.9, size * 0.9);
+
+      let s = random([4, 5, 6]);
+
+      if (random() < 0.55) {
+
+        fill(255, 225, 120, random(30, 90) * progress);
+
+      } else {
+
+        fill(255, 150, 210, random(25, 80) * progress);
+
+      }
+
+      rect(px, py, s, s);
+
+    }
+
+    for (let i = 0; i < 3; i++) {
+
+      let px = x + random(-size * 1.7, size * 1.7);
+
+      let py = y + random(-size * 0.9, size * 0.9);
+
+      let u = size * 0.05 * (1 + progress);
+
+      fill(255, 235, 140, 120 * progress);
+
+      rect(px, py, u, u * 4);
+
+      rect(px, py, u * 4, u);
+
+    }
+
+  } else {
+
+    drawHolyFloatingItems();
+
+  }
+
+  rectMode(CORNER);
+
+}
+
+// Deceive：红色像素扩散
+
+function drawBloodHoverEffect(x, y, size, progress) {
+
+  if (progress <= 0.02) return;
+
+  rectMode(CENTER);
+
+  noStroke();
+
+  let fullScreen = progress >= 1;
+
+  let amount = fullScreen ? 180 : 10 + progress * 55;
+
+  for (let i = 0; i < amount; i++) {
+
+    let px;
+
+    let py;
+
+    if (fullScreen) {
+
+      px = random(width);
+
+      py = random(height);
+
+    } else {
+
+      px = x + random(-size * (1.4 + progress), size * (1.4 + progress));
+
+      py = y + random(-size * (0.8 + progress), size * (0.8 + progress));
+
+    }
+
+    let s = random([4, 5, 6, 8]);
+
+    if (fullScreen) {
+
+      s *= random(1, 2.2);
+
+    } else {
+
+      s *= 1 + progress * 0.4;
+
+    }
+
+    fill(255, 0, 25, random(35, 120) * progress);
+
+    rect(px, py, s, s);
+
+  }
+
+  let lineCount = fullScreen ? 35 : 6 * progress;
+
+  for (let i = 0; i < lineCount; i++) {
+
+    let px;
+
+    let py;
+
+    if (fullScreen) {
+
+      px = random(width);
+
+      py = random(height);
+
+    } else {
+
+      px = x + random(-size * 2, size * 2);
+
+      py = y + random(-size, size);
+
+    }
+
+    fill(255, 0, 25, 110 * progress);
+
+    rect(px, py, random(14, 40), random([3, 4, 5]));
+
+  }
+
+  rectMode(CORNER);
+
+}
+
+// 初始化 Confess 满格后的漂浮元素
+
+function initHolyFloatItems() {
+
+  holyFloatItems = [];
+
+  let types = ["cross", "spark", "dot", "box", "line", "eye"];
+
+  for (let i = 0; i < 55; i++) {
+
+    holyFloatItems.push({
+
+      x: random(width),
+
+      y: random(height),
+
+      size: random(10, 34),
+
+      type: random(types),
+
+      speedX: random(-0.25, 0.25),
+
+      speedY: random(-0.45, -0.12),
+
+      phase: random(TWO_PI),
+
+      alpha: random(80, 170)
+
+    });
+
+  }
+
+}
+
+// Confess 满格后的漂浮元素
+
+function drawHolyFloatingItems() {
+
+  rectMode(CORNER);
+
+  noStroke();
+
+  fill(255, 220, 170, 10);
+
+  rect(0, 0, width, height);
+
+  rectMode(CENTER);
+
+  for (let item of holyFloatItems) {
+
+    item.x += item.speedX;
+
+    item.y += item.speedY;
+
+    let floatOffset = sin(frameCount * 0.035 + item.phase) * 4;
+
+    if (item.y < -60) {
+
+      item.y = height + 60;
+
+      item.x = random(width);
+
+    }
+
+    if (item.x < -60) item.x = width + 60;
+
+    if (item.x > width + 60) item.x = -60;
+
+    let pulse = 1 + sin(frameCount * 0.025 + item.phase) * 0.12;
+
+    let s = item.size * pulse;
+
+    if (random() < 0.55) {
+
+      fill(255, 230, 120, item.alpha);
+
+    } else {
+
+      fill(255, 160, 210, item.alpha);
+
+    }
+
+    drawHolySmallSymbol(item.type, item.x, item.y + floatOffset, s);
+
+  }
+
+  rectMode(CORNER);
+
+}
+
+function drawHolySmallSymbol(type, x, y, s) {
+
+  let u = max(3, floor(s / 6));
+
+  if (type === "cross") {
+
+    rect(x, y, u, s);
+
+    rect(x, y, s, u);
+
+  }
+
+  if (type === "spark") {
+
+    rect(x, y, u * 2, u * 2);
+
+    rect(x, y - u * 3, u, u * 2);
+
+    rect(x, y + u * 3, u, u * 2);
+
+    rect(x - u * 3, y, u * 2, u);
+
+    rect(x + u * 3, y, u * 2, u);
+
+  }
+
+  if (type === "dot") {
+
+    rect(x, y, u * 1.5, u * 1.5);
+
+  }
+
+  if (type === "box") {
+
+    rect(x, y, u * 3, u * 3);
+
+  }
+
+  if (type === "line") {
+
+    rect(x, y, s, u);
+
+  }
+
+  if (type === "eye") {
+
+    rect(x - u * 3, y, u * 2, u);
+
+    rect(x + u * 3, y, u * 2, u);
+
+    rect(x, y - u * 2, u * 4, u);
+
+    rect(x, y + u * 2, u * 4, u);
+
+    rect(x, y, u * 2, u * 2);
+
+  }
+
+}
+
+// 像素剑鼠标
+
 function drawPixelCursor() {
-  push()
 
   rectMode(CENTER);
 
@@ -982,6 +1170,36 @@ function drawPixelCursor() {
   } else if (mouseX > rightZone) {
 
     redPower = map(mouseX, rightZone, width, 0, 1);
+
+  }
+
+  for (let i = 0; i < 12; i++) {
+
+    let angle = random(TWO_PI);
+
+    let radius = random(8, 28);
+
+    let px = mouseX + cos(angle) * radius;
+
+    let py = mouseY + sin(angle) * radius;
+
+    let s = random([3, 4, 5]);
+
+    if (yellowPower > redPower) {
+
+      fill(255, 225, 90, random(30, 80) * yellowPower);
+
+    } else if (redPower > yellowPower) {
+
+      fill(255, 0, 25, random(30, 80) * redPower);
+
+    } else {
+
+      fill(255, 255, 255, random(15, 45));
+
+    }
+
+    rect(px, py, s, s);
 
   }
 
@@ -1170,6 +1388,8 @@ function drawPixelCursor() {
   }
 
   pop();
+
+  rectMode(CORNER);
 
 }
 
