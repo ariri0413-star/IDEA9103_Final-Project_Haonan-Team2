@@ -11,18 +11,21 @@ let playButton;
 let openingNun;
 
 // Perlin noise overlay
-let perlinLayer;
+let flowLayer;
 let particles = [];
 let flowField = [];
+
+let ffCols, ffRows;
+let overlayAlpha = 0;
 
 let gridSize = 10;
 let perlinCols, perlinRows;
 
 let zoff = 0;
-let zstep = 0.01;
+let zstep = 0.3;
 
-let psNums = 800;
-let maxSpeed = 4;
+let psNums = 3000;
+let maxSpeed = 8;
 
 // ─────────────────────────────────────────────
 // stained glass
@@ -213,9 +216,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   frameRate(30);
   noSmooth();
-
   initCrosses();
-  initPerlinOverlay();
 
   analyser = new p5.Amplitude();
   analyser.setInput(openingSong);
@@ -223,23 +224,10 @@ function setup() {
   playButton = createButton("Play/Pause");
   playButton.position(width * 0.02, height * 0.03);
   playButton.mousePressed(playPause);
+
+  initFlowLayer();   // ←新增
 }
 
-function initPerlinOverlay() {
-  perlinLayer = createGraphics(width, height);
-  perlinLayer.clear();
-  perlinLayer.noSmooth();
-
-  perlinCols = floor(width / gridSize);
-  perlinRows = floor(height / gridSize);
-
-  particles = [];
-  flowField = [];
-
-  for (let i = 0; i < psNums; i++) {
-    particles.push(new Particle());
-  }
-}
 
 function initCrosses() {
   crosses = [];
@@ -534,17 +522,50 @@ function draw() {
 
   // 柏林噪声覆盖在图片最上层，并且慢慢累积
   drawPerlinOverlay();
-  image(perlinLayer, 0, 0);
+}
+
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  playButton.position(width * 0.02, height * 0.03);
+
+  initCrosses();
+  initFlowLayer();
+}
+
+function playPause() {
+  if (openingSong.isPlaying()) {
+    openingSong.pause();
+    playButton.html("Play");
+  } else {
+    openingSong.loop();
+    playButton.html("Pause");
+  }
+}function initFlowLayer() {
+  flowLayer = createGraphics(width, height);
+  flowLayer.clear();
+
+  ffCols = floor(width / gridSize);
+  ffRows = floor(height / gridSize);
+
+  particles = [];
+  flowField = [];
+
+  for (let i = 0; i < psNums; i++) {
+    particles.push(new FlowParticle()); 
+  }
+
+  overlayAlpha = 0;
 }
 
 function drawPerlinOverlay() {
   let yoff = 0;
 
-  for (let y = 0; y < perlinRows; y++) {
+  for (let y = 0; y < ffRows; y++) {
     let xoff = 0;
 
-    for (let x = 0; x < perlinCols; x++) {
-      let index = x + y * perlinCols;
+    for (let x = 0; x < ffCols; x++) {
+      let index = x + y * ffCols;
 
       let angle = noise(xoff, yoff, zoff) * TWO_PI * 4;
       let v = p5.Vector.fromAngle(angle);
@@ -566,9 +587,15 @@ function drawPerlinOverlay() {
     p.edges();
     p.show();
   }
+
+  overlayAlpha = min(overlayAlpha + 3, 255);
+
+  tint(255, overlayAlpha);
+  image(flowLayer, 0, 0);
+  noTint();
 }
 
-class Particle {
+class FlowParticle{
   constructor() {
     this.pos = createVector(random(width), random(height));
     this.vel = createVector(0, 0);
@@ -580,10 +607,8 @@ class Particle {
   follow(vectors) {
     let x = floor(this.pos.x / gridSize);
     let y = floor(this.pos.y / gridSize);
+    let index = x + y * ffCols;
 
-    if (x < 0 || x >= perlinCols || y < 0 || y >= perlinRows) return;
-
-    let index = x + y * perlinCols;
     let force = vectors[index];
 
     if (force) {
@@ -609,10 +634,10 @@ class Particle {
     let g = lerp(220, 230, t);
     let b = lerp(230, 180, t);
 
-    perlinLayer.stroke(r, g, b, 35);
-    perlinLayer.strokeWeight(2);
+    flowLayer.stroke(r, g, b, 60);
+    flowLayer.strokeWeight(5);
 
-    perlinLayer.line(
+    flowLayer.line(
       this.pos.x,
       this.pos.y,
       this.prevPos.x,
@@ -647,23 +672,5 @@ class Particle {
       this.pos.y = height;
       this.updatePrev();
     }
-  }
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  initCrosses();
-  initPerlinOverlay();
-
-  playButton.position(width * 0.02, height * 0.03);
-}
-
-function playPause() {
-  if (openingSong.isPlaying()) {
-    openingSong.pause();
-    playButton.html("Play");
-  } else {
-    openingSong.loop();
-    playButton.html("Pause");
   }
 }
