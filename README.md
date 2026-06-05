@@ -79,15 +79,11 @@ All AI-assisted code was reviewed, tested, and modified by the group members bef
 
 ## 6. Interaction instructions
 
- Click the **Play/Pause** button to start the audio and activate the experience.
-
- Slowly move the mouse across the screen to make a choice.
-
- Moving the cursor towards the **left side** generates more holy particles and visual effects. This path gradually leads to the **Heaven ending**.
-
- Moving the cursor towards the **right side** generates more red glitch effects and visual corruption. This path gradually leads to the **Hell ending**.
-
- The visuals react to both the audio and the mouse position. Different choices create different atmospheres and outcomes.
+- Click the **Play/Pause** button to start the audio.
+- Move the mouse across the screen to make a choice.
+- Hover over **Confess** to charge the holy path and enter the **Heaven ending**.
+- Hover over **Deceive** to charge the corrupted path and enter the **Hell ending**.
+- Visual effects react to both the music and your choice.
 
 ![Sketch](image/Concept1.png)
 
