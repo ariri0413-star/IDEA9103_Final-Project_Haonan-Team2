@@ -34,14 +34,11 @@ The candle flame reacts to the volume of the audio. When the soundtrack becomes 
 
 The user interacts with this mechanic through the story choices. If the nun chooses to face the truth, the audio remains calm and soft, keeping the visual effects stable and gentle. If she chooses to lie, the soundtrack gradually becomes heavier and more distorted, causing the candle, cross, glitch lines, and disturbing text effects to become increasingly unstable. This directly connects to our project vision by using sound-driven visual changes to represent guilt, self-deception, and psychological collapse.
 
-![Sketch](image/candle2.jpg)
-*Candle Flame Flickering*
+![Sketch](image/audioDriven1.JPG)
+*Candle Flame Flickering, Cross Shifting, Hearts floating*
 
-![Sketch](image/christian-cross-pixel-art-pixel-art-cross-christianity-jesus-8bit-pixel.jpeg)
-*Christian Cross Shifting*
-
-![Sketch](image/RedLines.png)
-*Glitch Lines*
+![Sketch](image/audioDriven2.png)
+*Glitch Lines, Scary Texts*
 
 ### 3.2. Time-based: Zhige Hu
 The time-based mechanic in our project is used to make the picture feel alive and emotionally reactive. We plan to use timers to gradually change the atmosphere depending on the player’s choices. Throughout the story, timed visual effects reflect the nun’s emotional state.
