@@ -1,560 +1,659 @@
-//hell
+// opening scene: church
+
+let crosses = [];
 
 let openingSong;
 let badSong;
 let goodSong;
 
-let badCrosses = [];
-let scaryTexts = [];
-let eyes = [];
+let analyser;
+let playButton;
+let openingNun;
 
-let textPool = [
-  "God knows the truth",
-  "GUILTY",
-  "LIAR"
+// Perlin noise overlay
+let perlinLayer;
+let particles = [];
+let flowField = [];
+
+let gridSize = 10;
+let perlinCols, perlinRows;
+
+let zoff = 0;
+let zstep = 0.01;
+
+let psNums = 800;
+let maxSpeed = 4;
+
+// ─────────────────────────────────────────────
+// stained glass
+
+const glassColour = {
+  'n': null,
+  'wf': [33, 31, 44],
+  'b1': [41, 60, 171],
+  'b2': [45, 103, 168],
+  'b3': [143, 214, 240],
+};
+
+const glass = [
+  ['n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'],
+  ['n','n','n','n','n','n','n','n','n','n','wf','n','n','n','n','n','n','n','n','n','n'],
+  ['n','n','n','n','n','n','n','n','wf','wf','wf','wf','wf','n','n','n','n','n','n','n','n'],
+  ['n','n','n','n','n','n','n','wf','wf','wf','wf','wf','wf','wf','n','n','n','n','n','n','n'],
+  ['n','n','n','n','n','n','wf','wf','wf','wf','b1','wf','wf','wf','wf','n','n','n','n','n','n'],
+  ['n','n','n','n','n','wf','wf','wf','wf','b3','b1','b2','wf','wf','wf','wf','n','n','n','n','n'],
+  ['n','n','n','n','n','wf','wf','wf','b1','b3','b1','b2','b1','wf','wf','wf','n','n','n','n','n'],
+  ['n','n','n','n','wf','wf','b2','wf','wf','b2','b2','b3','wf','wf','b1','wf','wf','n','n','n','n'],
+  ['n','n','n','n','wf','wf','wf','wf','wf','wf','b2','wf','wf','wf','wf','wf','wf','n','n','n','n'],
+  ['n','n','n','wf','wf','wf','b3','wf','wf','wf','wf','wf','wf','b2','wf','wf','wf','wf','n','n','n'],
+  ['n','n','n','wf','wf','b2','b3','b2','wf','wf','b3','wf','wf','b1','b1','b2','wf','wf','n','n','n'],
+  ['n','n','wf','wf','wf','b1','b1','b3','b3','wf','b1','wf','b2','b3','b3','b2','wf','wf','wf','n','n'],
+  ['n','n','wf','wf','wf','wf','b1','wf','wf','wf','wf','wf','wf','wf','b3','wf','wf','wf','wf','n','n'],
+  ['n','n','wf','b3','wf','wf','wf','wf','wf','wf','b1','wf','wf','wf','wf','wf','wf','b1','wf','n','n'],
+  ['n','wf','wf','wf','wf','wf','wf','wf','wf','b3','b2','b2','wf','wf','wf','wf','wf','wf','wf','wf','n'],
+  ['n','wf','wf','wf','b1','b2','wf','wf','wf','b3','b1','b2','wf','wf','wf','b3','b2','wf','wf','wf','n'],
+  ['n','wf','wf','b3','b3','b1','b2','wf','b2','b3','b2','b2','b1','wf','b3','b3','b1','b1','wf','wf','n'],
+  ['n','wf','wf','b2','b2','b2','b1','wf','b1','b2','b1','b2','b2','wf','b3','b3','b3','b1','wf','wf','n'],
+  ['n','wf','wf','b1','b3','b3','b3','wf','b2','b1','b3','b1','b1','wf','b3','b1','b1','b2','wf','wf','n'],
+  ['n','wf','wf','b1','b1','b3','b3','wf','b1','b1','b3','b1','b1','wf','b1','b3','b1','b2','wf','wf','n'],
+  ['n','wf','wf','b1','b1','b2','b3','wf','b1','b3','b3','b3','b3','wf','b1','b1','b1','b3','wf','wf','n'],
+  ['n','wf','wf','b2','b2','b2','b1','wf','b1','b3','b1','b3','b3','wf','b3','b3','b1','b3','wf','wf','n'],
+  ['n','wf','wf','b3','b1','b2','b2','wf','b1','b2','b2','b3','b2','wf','b1','b3','b3','b3','wf','wf','n'],
+  ['n','wf','wf','b3','b3','b1','b1','wf','b2','b2','b1','b3','b2','wf','b1','b2','b1','b3','wf','wf','n'],
+  ['n','wf','wf','b3','b3','b2','b1','wf','b2','b3','b2','b2','b1','wf','b2','b2','b3','b2','wf','wf','n'],
+  ['n','wf','wf','b2','b2','b1','b3','wf','b1','b1','b1','b2','b2','wf','b2','b3','b2','b2','wf','wf','n'],
+  ['n','wf','wf','b2','b2','b2','b1','wf','b3','b1','b1','b2','b2','wf','b3','b3','b2','b1','wf','wf','n'],
+  ['n','wf','wf','b1','b1','b2','b3','wf','b2','b1','b2','b2','b2','wf','b2','b1','b1','b3','wf','wf','n'],
+  ['n','wf','wf','b3','b1','b2','b3','wf','b2','b3','b1','b1','b2','wf','b1','b1','b1','b3','wf','wf','n'],
+  ['n','wf','wf','b1','b3','b2','b2','wf','b2','b2','b2','b1','b1','wf','b2','b2','b1','b3','wf','wf','n'],
+  ['n','wf','wf','b3','b3','b3','b3','wf','b2','b3','b3','b2','b2','wf','b1','b2','b3','b3','wf','wf','n'],
+  ['n','wf','wf','b2','b3','b1','b3','wf','b2','b2','b1','b2','b3','wf','b2','b2','b2','b1','wf','wf','n'],
+  ['n','wf','wf','b1','b1','b2','b3','wf','b3','b2','b2','b2','b2','wf','b1','b2','b3','b2','wf','wf','n'],
+  ['n','wf','wf','b1','b1','b3','b2','wf','b2','b3','b3','b2','b2','wf','b1','b3','b3','b3','wf','wf','n'],
+  ['n','wf','wf','b2','b2','b3','b3','wf','b2','b2','b1','b2','b2','wf','b3','b3','b3','b3','wf','wf','n'],
+  ['n','wf','wf','b1','b1','b2','b2','wf','b1','b3','b3','b1','b2','wf','b3','b1','b2','b1','wf','wf','n'],
+  ['n','wf','wf','b2','b2','b1','b2','wf','b1','b1','b3','b3','b3','wf','b1','b2','b1','b1','wf','wf','n'],
+  ['n','wf','wf','b2','b3','b2','b1','wf','b1','b1','b3','b3','b2','wf','b1','b2','b1','b3','wf','wf','n'],
+  ['n','wf','wf','b2','b2','b2','b1','wf','b1','b1','b1','b1','b1','wf','b3','b2','b3','b1','wf','wf','n'],
+  ['n','wf','wf','b3','b3','b1','b1','wf','b3','b1','b3','b2','b2','wf','b1','b2','b3','b1','wf','wf','n'],
+  ['n','wf','wf','b3','b2','b3','b1','wf','b2','b2','b2','b1','b3','wf','b2','b3','b3','b3','wf','wf','n'],
+  ['n','wf','wf','b1','b2','b3','b3','wf','b1','b3','b1','b1','b1','wf','b1','b1','b1','b3','wf','wf','n'],
+  ['n','wf','wf','b1','wf','b3','b3','wf','b2','b3','b3','b1','b3','wf','b1','b1','wf','b1','wf','wf','n'],
+  ['n','wf','wf','b1','wf','wf','b3','wf','b3','b3','b2','b3','b3','wf','b2','wf','wf','b1','wf','wf','n'],
+  ['n','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','n'],
+  ['n','wf','wf','wf','wf','wf','wf','wf','wf','wf','b3','wf','wf','wf','wf','wf','wf','wf','wf','wf','n'],
+  ['n','wf','wf','b3','wf','b1','wf','wf','wf','b3','b2','b3','wf','wf','wf','b1','wf','b3','wf','wf','n'],
+  ['n','wf','wf','wf','b1','wf','wf','wf','b3','b1','b2','b1','b3','wf','wf','wf','b1','wf','wf','wf','n'],
+  ['n','wf','wf','b2','wf','b3','wf','wf','wf','b3','b2','b3','wf','wf','wf','b3','wf','b2','wf','wf','n'],
+  ['n','wf','wf','wf','wf','wf','wf','wf','wf','wf','b3','wf','wf','wf','wf','wf','wf','wf','wf','wf','n'],
+  ['n','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','wf','n'],
+  ['n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'],
 ];
 
-let analyser;
-let fft;
-let playButton;
-let badNun;
+const PW = glass[0].length;
+const PH = glass.length;
+const WINDOW_COLS = 3;
+
+// candles
+const candlesColour = {
+  'n': null,
+  'cw': [88, 88, 88],
+  'f0': [252, 240, 158],
+  'f1': [252, 223, 37],
+  'f2': [247, 197, 0],
+  'f3': [251, 147, 2],
+  'g1': [234, 234, 234],
+  'g2': [224, 217, 219],
+  'g3': [181, 164, 167],
+  'g4': [169, 143, 146],
+  'g5': [161, 130, 135],
+  'g6': [131, 97, 102],
+  'b1': [254, 254, 204],
+  'b2': [255, 238, 161],
+  'b3': [245, 195, 4],
+  'b4': [247, 158, 35],
+  'h1': [247, 158, 35],
+  'h2': [173, 111, 0],
+  'h3': [164, 101, 0],
+  'h4': [119, 71, 3],
+  'h5': [80, 58, 1],
+  'h6': [62, 43, 1],
+  'h7': [36, 22, 0],
+};
+
+const candles = [
+  ['n','n','n','n','n','f2','n','n','n','n','n','n','n','n','n','n','n'],
+  ['n','n','n','n','f2','f1','f2','n','n','n','n','n','n','n','n','n','n'],
+  ['n','n','n','n','f3','f1','f2','n','n','n','n','f2','n','n','n','n','n'],
+  ['n','n','n','n','f3','f0','f3','n','n','n','f2','f1','f2','n','n','n','n'],
+  ['n','n','n','n','n','cw','n','n','n','n','f3','f1','f2','n','n','n','n'],
+  ['n','n','n','g1','g1','g2','g2','g2','n','n','f3','f0','f3','n','n','n','n'],
+  ['n','n','g1','g2','g6','g1','g2','g6','g2','n','n','cw','n','n','n','n','n'],
+  ['n','n','g2','g2','g6','g1','g6','g6','b1','b1','b1','b2','b2','b2','b2','n','n'],
+  ['n','n','g2','g6','g5','g1','g6','b1','b1','b2','b2','b2','b4','b1','b2','b2','n'],
+  ['n','n','g2','g4','g4','g5','g6','b1','b2','b3','b3','b3','b4','b4','b1','b2','n'],
+  ['n','n','g2','g3','g4','g5','g6','b2','b3','b2','b2','b3','b3','b4','b4','b1','n'],
+  ['n','n','n','g3','g4','g5','g6','g6','b3','b1','b2','b3','b3','b4','b4','b1','n'],
+  ['n','n','n','g3','g4','g5','g6','g6','b3','b1','b2','b3','b3','b4','b4','n','n'],
+  ['n','n','n','g3','g4','g5','g6','g6','b3','b1','b2','b3','b3','b4','b4','n','n'],
+  ['n','n','g2','g3','g4','g5','g6','b1','b3','b2','b3','b3','b3','b4','b4','b2','n'],
+  ['n','g2','g2','g3','g4','g5','g6','b2','b3','b3','b3','b3','b3','b4','b1','b1','b2'],
+  ['h4','h2','h1','h1','h1','h1','h2','h1','h2','h3','h3','h3','h3','h4','h4','h3','h4'],
+  ['n','h5','h5','h5','h5','h5','h6','h6','h6','h6','h6','h7','h7','h7','h7','h7','n'],
+  ['n','h2','h2','h2','h2','h2','h3','h3','h3','h3','h3','h4','h4','h4','h4','h4','n'],
+];
+
+const CW = candles[0].length;
+const CH = candles.length;
+
+// spiderweb
+const webColour = {
+  'n': null,
+  'w': [220, 220, 220],
+};
+
+const web = [
+  ['w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'],
+  ['w','w','n','w','w','n','n','w','n','n','w','n','n','w','n','n','n'],
+  ['w','n','w','n','w','w','w','n','n','w','n','n','w','n','n','n','n'],
+  ['w','w','n','w','n','n','n','w','w','w','n','n','n','w','n','n','n'],
+  ['w','n','w','n','w','w','n','w','n','n','w','w','n','w','n','n','n'],
+  ['w','n','n','w','n','w','w','n','n','n','w','n','w','w','w','n','n'],
+  ['w','n','w','w','n','n','w','w','n','w','n','n','n','n','w','w','n'],
+  ['w','w','n','n','w','w','n','n','w','w','n','n','n','w','n','n','n'],
+  ['w','n','n','n','w','n','n','n','n','w','n','n','w','n','n','n','n'],
+  ['w','n','w','n','w','n','n','w','w','n','w','n','w','n','n','n','n'],
+  ['w','w','n','w','w','n','w','n','n','n','w','w','n','n','n','n','n'],
+  ['w','n','n','n','n','w','n','n','n','w','n','w','n','n','n','n','n'],
+  ['w','n','n','w','n','n','w','n','w','n','n','n','w','n','n','n','n'],
+  ['w','n','w','n','w','n','n','w','n','n','n','n','n','w','n','n','n'],
+  ['w','w','n','n','n','w','w','n','n','n','n','n','n','n','n','n','n'],
+  ['w','n','n','n','n','n','n','w','n','n','n','n','n','n','n','n','n'],
+  ['w','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'],
+];
+
+const WW = web[0].length;
+const WH = web.length;
+
+// spider
+const spiderColour = {
+  'n': null,
+  'w': [220, 220, 220],
+  's': [40, 25, 98],
+  'e': [176, 12, 12],
+};
+
+const spider = [
+  ['n','n','n','n','n','w','n','n','n','n','n'],
+  ['n','n','n','n','n','w','n','n','n','n','n'],
+  ['n','n','n','n','n','w','n','n','n','n','n'],
+  ['n','n','n','n','n','w','n','n','n','n','n'],
+  ['n','s','s','n','n','w','n','n','s','s','n'],
+  ['n','n','n','s','n','w','n','s','n','n','n'],
+  ['n','s','s','s','s','s','s','s','s','s','n'],
+  ['s','n','n','s','e','s','e','s','n','n','s'],
+  ['n','n','s','n','s','n','s','n','s','n','n'],
+  ['n','s','n','n','s','n','s','n','n','s','n'],
+  ['n','s','n','n','n','n','n','n','n','s','n'],
+];
+
+const SW = spider[0].length;
+const SH = spider.length;
+
+// ─────────────────────────────────────────────
 
 function preload() {
-  openingSong = loadSound("assets/ES_House of a Hundred Rooms - Dream Cave.wav");
+  openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
-  badNun = loadImage("image/nun2.png");
+  openingNun = loadImage("image/nun1.png");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  frameRate(30);
   noSmooth();
 
-  // create 10 random crosses
-  randomiseCrosses();
-  // refresh every 2 seconds
-  setInterval(randomiseCrosses, 2000);
-
-  createEyes(7);
+  initCrosses();
+  initPerlinOverlay();
 
   analyser = new p5.Amplitude();
   analyser.setInput(openingSong);
-  fft = new p5.FFT();
-  fft.setInput(openingSong);
 
   playButton = createButton("Play/Pause");
   playButton.position(width * 0.02, height * 0.03);
   playButton.mousePressed(playPause);
 }
 
-// ——————————————————————————————————————————————
+function initPerlinOverlay() {
+  perlinLayer = createGraphics(width, height);
+  perlinLayer.clear();
+  perlinLayer.noSmooth();
 
-// colour palette for cross
-const crossColour = {
-  'n': null,
-  'g': [221, 221, 221],    
-  'w': [255, 255, 255],   
-  'r': [250, 5, 6],   
-};
+  perlinCols = floor(width / gridSize);
+  perlinRows = floor(height / gridSize);
 
-const cross = [
-  ['n','n','n','n','n','n','n','n','w','w','n','n','n','n','n','n','n','n','n','n'], // row 1
-  ['n','n','n','n','n','n','n','n','w','w','g','n','n','n','n','n','n','n','n','n'], // row 2
-  ['n','n','n','n','n','n','n','n','w','w','g','n','n','n','n','n','n','n','n','n'], // row 3
-  ['n','n','n','n','n','n','n','n','w','w','g','n','n','n','n','n','n','n','n','n'], // row 4
-  ['n','n','n','n','n','n','n','n','r','r','g','n','n','n','n','n','n','n','n','n'], // row 5
-  ['w','w','r','w','w','w','w','w','r','r','r','w','w','w','w','w','r','w','w','g'], // row 6
-  ['w','w','r','r','r','w','w','w','r','r','r','w','w','w','r','r','r','w','w','g'], // row 7
-  ['n','n','n','r','r','r','r','r','r','r','r','r','r','r','r','n','n','n','n','n'], // row 8
-  ['n','n','n','n','n','n','n','r','r','r','r','r','r','n','n','n','n','n','n','n'], // row 9
-  ['n','n','n','n','n','n','n','r','r','r','r','n','n','n','n','n','n','n','n','n'], // row 10
-  ['n','n','n','n','n','n','n','n','r','r','r','n','n','n','n','n','n','n','n','n'], // row 11
-  ['n','n','n','n','n','n','n','n','r','r','r','r','n','n','n','n','n','n','n','n'], // row 12
-  ['n','n','n','n','n','n','n','n','r','r','r','r','n','n','n','n','n','n','n','n'], // row 13
-  ['n','n','n','n','n','n','n','n','r','r','r','r','n','n','n','n','n','n','n','n'], // row 14
-  ['n','n','n','n','n','n','n','r','r','r','r','r','n','n','n','n','n','n','n','n'], // row 15
-  ['n','n','n','n','n','n','n','r','r','r','r','n','n','n','n','n','n','n','n','n'], // row 16
-  ['n','n','n','n','n','n','n','r','r','r','g','n','n','n','n','n','n','n','n','n'], // row 17
-  ['n','n','n','n','n','n','n','n','r','r','g','n','n','n','n','n','n','n','n','n'], // row 18
-  ['n','n','n','n','n','n','n','n','r','r','g','n','n','n','n','n','n','n','n','n'], // row 19
-  ['n','n','n','n','n','n','n','n','r','r','g','n','n','n','n','n','n','n','n','n'], // row 20
-  ['n','n','n','n','n','n','n','n','r','r','g','n','n','n','n','n','n','n','n','n'], // row 21
-  ['n','n','n','n','n','n','n','n','r','r','g','n','n','n','n','n','n','n','n','n'], // row 22
-  ['n','n','n','n','n','n','n','n','w','r','g','n','n','n','n','n','n','n','n','n'], // row 23
-  ['n','n','n','n','n','n','n','n','w','w','g','n','n','n','n','n','n','n','n','n'], // row 24
-  ['n','n','n','n','n','n','n','n','w','w','g','n','n','n','n','n','n','n','n','n'], // row 25
-  ['n','n','n','n','n','n','n','n','w','w','g','n','n','n','n','n','n','n','n','n'], // row 26
-  ['n','n','n','n','n','n','n','n','w','w','g','n','n','n','n','n','n','n','n','n'], // row 27
-  ['n','n','n','n','n','n','n','n','w','w','g','n','n','n','n','n','n','n','n','n'], // row 28
-  ['n','n','n','n','n','n','n','n','g','g','g','n','n','n','n','n','n','n','n','n'], // row 29
-];
+  particles = [];
+  flowField = [];
 
-const XW = cross[0].length;
-const XH = cross.length;
+  for (let i = 0; i < psNums; i++) {
+    particles.push(new Particle());
+  }
+}
 
-// ——————————————————————————————————————————————————
+function initCrosses() {
+  crosses = [];
+  const count = 18;
 
-// eye
+  for (let i = 0; i < count; i++) {
+    crosses.push({
+      x: random(width),
+      y: random(height),
+      alpha: 0,
+      state: 'fadeIn',
+      holdTimer: floor(random(40, 120)),
+      holdAge: 0,
+      fadeSpeed: random(3, 8),
+    });
+  }
+}
 
-const eyeColour = {
-  'n': null,
-  'f': [110, 4, 0],
-  'p': [242, 178, 181],
-  'r': [240, 113, 108],
-  'w': [255, 255, 255],
-  'b': [0, 0, 0],
-  'd': [55, 123, 31],
-  'g': [85, 180, 53],
-};
-
-const eyeWhiteTemplate = [
-  [ 'n','n','n','n','n','n','f','f','f','f','f','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','f','f','p','p','r','p','p','f','f','n','n','n','n' ],
-  [ 'n','n','n','f','p','p','w','r','w','w','w','p','p','f','n','n','n' ],
-  [ 'n','n','f','p','w','w','w','r','w','w','w','w','w','r','f','n','n' ],
-  [ 'n','f','p','w','w','w','w','w','r','w','w','w','r','p','p','f','n' ],
-  [ 'n','f','p','w','w','w','w','w','w','w','w','r','w','w','r','f','n' ],
-  [ 'f','r','w','w','w','w','w','w','w','w','w','w','w','w','w','p','f' ],
-  [ 'f','p','r','w','w','w','w','w','w','w','w','w','w','w','w','p','f' ],
-  [ 'f','p','w','r','r','r','w','w','w','w','w','w','w','r','r','p','f' ],
-  [ 'f','p','w','w','w','w','w','w','w','w','w','w','r','w','w','r','f' ],
-  [ 'f','r','w','w','w','w','r','w','w','w','w','w','w','w','w','p','f' ],
-  [ 'n','f','p','w','w','r','w','w','w','w','w','r','w','w','p','f','n' ],
-  [ 'n','f','p','w','r','w','w','w','r','w','w','w','r','w','p','f','n' ],
-  [ 'n','n','f','r','w','w','w','w','r','w','w','w','w','r','f','n','n' ],
-  [ 'n','n','n','f','p','p','w','r','w','w','w','p','p','f','n','n','n' ],
-  [ 'n','n','n','n','f','f','r','p','p','p','p','f','f','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','f','f','f','f','f','n','n','n','n','n','n' ]
-];
-
-const pupilTemplate = [
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','b','b','b','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','b','d','d','d','b','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','b','d','g','g','g','d','b','n','n','n','n','n' ],
-  [ 'n','n','n','n','b','d','g','b','w','w','g','d','b','n','n','n','n' ],
-  [ 'n','n','n','n','b','d','g','b','b','w','g','d','b','n','n','n','n' ],
-  [ 'n','n','n','n','b','d','g','b','b','b','g','d','b','n','n','n','n' ],
-  [ 'n','n','n','n','n','b','d','g','g','g','d','b','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','b','d','d','d','b','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','b','b','b','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ],
-  [ 'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n' ]
-];
-
-const pupilColours = [
-  { d: [55, 123, 31], g: [85, 180, 53] },
-  { d: [35, 90, 160], g: [90, 170, 255] },
-  { d: [120, 50, 150], g: [210, 130, 255] },
-  { d: [130, 70, 20], g: [220, 140, 60] },
-  { d: [120, 20, 40], g: [240, 80, 100] },
-  { d: [90, 70, 160], g: [160, 150, 255] },
-  { d: [20, 120, 120], g: [90, 230, 220] }
-];
-
-function drawCross(x, y, ps, rms) {
+function drawCrosses(ps) {
   noStroke();
 
-  for (let r = 0; r < XH; r++) {
-    for (let c = 0; c < XW; c++) {
-      let key = cross[r][c];
-      let colour = crossColour[key];
+  for (let cross of crosses) {
+    if (cross.state === 'fadeIn') {
+      cross.alpha += cross.fadeSpeed;
+      if (cross.alpha >= 255) {
+        cross.alpha = 255;
+        cross.state = 'hold';
+        cross.holdAge = 0;
+      }
+    } else if (cross.state === 'hold') {
+      cross.holdAge++;
+      if (cross.holdAge >= cross.holdTimer) {
+        cross.state = 'fadeOut';
+      }
+    } else if (cross.state === 'fadeOut') {
+      cross.alpha -= cross.fadeSpeed;
+      if (cross.alpha <= 0) {
+        cross.alpha = 0;
+        cross.state = 'move';
+      }
+    } else if (cross.state === 'move') {
+      cross.x = random(width);
+      cross.y = random(height);
+      cross.holdTimer = floor(random(40, 120));
+      cross.fadeSpeed = random(3, 8);
+      cross.state = 'fadeIn';
+    }
+
+    if (cross.alpha <= 0) continue;
+
+    const x = floor(cross.x);
+    const y = floor(cross.y);
+
+    fill(220, 220, 220, cross.alpha);
+    rect(x, y - ps, ps, ps * 4);
+    rect(x - ps, y, ps * 3, ps);
+  }
+}
+
+function drawCandleGroup(cx, baseY, ps, mirror) {
+  const x0 = floor(cx - (CW / 2) * ps);
+  const y0 = floor(baseY - CH * ps);
+
+  noStroke();
+
+  for (let r = 0; r < CH; r++) {
+    for (let c = 0; c < CW; c++) {
+      const col = mirror ? CW - 1 - c : c;
+      const colour = candlesColour[candles[r][col]];
 
       if (!colour) continue;
-      // louder music, brighter crosses
-      // map the rms value to a brightness value between 40 and 255
-      let brightness = map(rms, 0, 0.3, 40, 255);
 
-      fill(
-        colour[0],
-        colour[1],
-        colour[2],
-        brightness
-      );
-
-      rect(x + c * ps, y + r * ps, ps + 0.5, ps + 0.5);
+      fill(colour[0], colour[1], colour[2]);
+      rect(x0 + c * ps, y0 + r * ps, ps + 0.5, ps + 0.5);
     }
   }
 }
 
-function randomiseCrosses() {
+function drawSpark(cx, baseY, ps, candleCol, bottomOffset, smallJump, bigJump, mirror) {
+  let x0 = floor(cx - (CW / 2) * ps);
+  let col = mirror ? CW - 1 - candleCol : candleCol;
+  let x = x0 + col * ps;
+  let bottomY = baseY - bottomOffset * ps;
 
-  badCrosses = [];
-
-  for (let i = 0; i < 10; i++) {
-
-    badCrosses.push({
-      x: random(width * 0.05, width * 0.9),
-      y: random(height * 0.05, height * 0.75)
-    });
-  }
+  rect(x, bottomY - smallJump, ps, ps);
+  rect(x, bottomY - ps - smallJump, ps, ps);
+  rect(x, bottomY - 3 * ps - bigJump, ps, ps);
 }
 
-// create random eyes with different sizes and non-overlapping positions
-function createEyes(num) {
-  eyes = [];
+function drawHalo(cx, baseY, ps, candleCol, bottomOffset, haloSize, mirror) {
+  let x0 = floor(cx - (CW / 2) * ps);
+  let col = mirror ? CW - 1 - candleCol : candleCol;
 
-  let attempts = 0;
-  const maxAttempts = 1000;
+  let centerX = floor(x0 + col * ps + ps / 2);
+  let centerY = floor(baseY - bottomOffset * ps - ps * 1.5);
 
-  while (eyes.length < num && attempts < maxAttempts) {
-    attempts++;
+  let block = ps;
 
-    const minSize = max(3, min(width, height) * 0.012);
-    const maxSize = max(5, min(width, height) * 0.022);
-    const ps = random(minSize, maxSize);
-
-    const eyeW = 17 * ps;
-    const eyeH = 17 * ps;
-
-    const newEye = {
-      x: random(0, width - eyeW),
-      y: random(0, height - eyeH),
-      ps: ps,
-      w: eyeW,
-      h: eyeH,
-      pupilOffsetX: 0,
-      pupilOffsetY: 0,
-      pupilColour: pupilColours[eyes.length]
-    };
-
-    let overlapping = false;
-
-    for (let existingEye of eyes) {
-      if (isOverlapping(newEye, existingEye)) {
-        overlapping = true;
-        break;
-      }
-    }
-
-    if (!overlapping) {
-      eyes.push(newEye);
-    }
-  }
-}
-
-// check whether two eyes overlap on the canvas
-function isOverlapping(a, b) {
-  const padding = max(2, min(width, height) * 0.01);
-
-  return !(
-    a.x + a.w + padding < b.x ||
-    a.x > b.x + b.w + padding ||
-    a.y + a.h + padding < b.y ||
-    a.y > b.y + b.h + padding
-  );
-}
-
-function drawPixelTemplate(template, x, y, ps, colourMap) {
-  const s = ceil(ps);
   noStroke();
 
-  for (let r = 0; r < template.length; r++) {
-    for (let c = 0; c < template[r].length; c++) {
-      const key = template[r][c];
-      const col = colourMap[key];
+  for (let y = -5; y <= 5; y++) {
+    for (let x = -5; x <= 5; x++) {
+      let d = sqrt(x * x + y * y);
 
-      if (!col) continue;
-
-      fill(col[0], col[1], col[2]);
-      rect(
-        floor(x + c * ps),
-        floor(y + r * ps),
-        s,
-        s
-      );
+      if (d < haloSize * 0.55) {
+        fill(252, 223, 37, 45);
+        rect(centerX + x * block, centerY + y * block, block, block);
+      }
     }
   }
 }
 
-// ________________________________________________
+function drawWeb(ps) {
+  noStroke();
 
-// create floating scary texts
-function createScaryTexts() {
+  for (let r = 0; r < WH; r++) {
+    for (let c = 0; c < WW; c++) {
+      const colour = webColour[web[r][c]];
 
-  // random amonunt of text between 2 and 5
-  let textCount = floor(random(2, 6));
+      if (!colour) continue;
 
-  for (let i = 0; i < textCount; i++) {
+      fill(colour[0], colour[1], colour[2]);
+      rect(c * ps, r * ps, ps + 0.5, ps + 0.5);
+    }
+  }
+}
 
-    scaryTexts.push({
+function drawSpider(ps, cw, offsetY) {
+  const x0 = cw - SW * ps;
 
-      text: random(textPool),
+  noStroke();
 
-      // start from outside right screen
-      x: width + random(width * 0.02, width * 0.3),
+  for (let r = 0; r < SH; r++) {
+    for (let c = 0; c < SW; c++) {
+      const colour = spiderColour[spider[r][c]];
 
-      // random vertical position
-      y: random(height * 0.05, height * 0.95),
+      if (!colour) continue;
 
-      // movement speed
-      speed: random(width * 0.002, width * 0.015),
-
-      //text size
-      size: random(width * 0.015, width * 0.05),
-
-      // random transparency
-      alpha: random(120, 255)
-    });
+      fill(colour[0], colour[1], colour[2]);
+      rect(x0 + c * ps, offsetY + r * ps, ps + 0.5, ps + 0.5);
+    }
   }
 }
 
 function draw() {
-  
-    background(24, 18, 35);
-    // canvas size
-    const cw = width;
-    const ch = height;
+  let rms = analyser.getLevel();
+  let smallJump = rms * 80;
+  let bigJump = rms * 160;
 
-    // ————————————————————————————————-
-    // old church window scaling system
-    const cols = 3;
+  const cw = width;
+  const ch = height;
 
-    const PW = 21;
-    const PH = 52;
+  background(12, 10, 22);
 
-    const marginX = cw * 0.03;
-    const marginY = ch * 0.04;
+  const marginX = cw * 0.03;
+  const marginY = ch * 0.04;
+  const availW = cw - marginX * 2;
+  const availH = ch - marginY * 2;
+  const cellW = availW / WINDOW_COLS;
 
-    const availW = cw - marginX * 2;
-    const availH = ch - marginY * 2;
+  const winW = cellW * 0.78;
+  const winH = availH * 0.90;
+  const pixSize = min(winW / PW, winH / PH);
+  const actualW = pixSize * PW;
+  const actualH = pixSize * PH;
+  const cy = marginY + availH / 2;
 
-    const cellW = availW / cols;
-
-    const winW = cellW * 0.78;
-    const winH = availH * 0.90;
-
-    const pixSize = min(winW / PW, winH / PH);
-
-    // ————————————————————————————————-
-
-    let rms = analyser.getLevel();
-
-    // ————————————————————————————————————————————————
-    fft.analyze();
-    // get energy of hight mid frequencis, the value will be between 0 and 255
-    let high = fft.getEnergy("highMid");
-
-    let shakeX = 0;
-    let shakeY = 0;
-
-    // shake amount changes with screen size
-    let shakeAmount = width * 0.01;
-
-    if (high > 30) {
-      shakeX = random(-shakeAmount, shakeAmount);
-      shakeY = random(-shakeAmount, shakeAmount);
-    }
-
-    for (let eye of eyes) {
-      if (frameCount % 40 === 0) {
-        eye.pupilOffsetX = random(-1.5, 1.5) * eye.ps;
-        eye.pupilOffsetY = random(-1.2, 1.2) * eye.ps;
-      }
-
-      drawPixelTemplate(eyeWhiteTemplate, eye.x + shakeX, eye.y + shakeY, eye.ps, eyeColour);
-
-      // replace the default green colours with this eye's unique pupil colours
-      const customPupilColour = {
-        ...eyeColour,
-        d: eye.pupilColour.d,
-        g: eye.pupilColour.g
-      };
-
-      drawPixelTemplate(
-        pupilTemplate,
-        eye.x + eye.pupilOffsetX + shakeX,
-        eye.y + eye.pupilOffsetY + shakeY,
-        eye.ps,
-        customPupilColour
-      );
-    }
-
-    let crossSize = pixSize * 0.5;
-    // draw 10 random crosses
-    for (let i = 0; i < badCrosses.length; i++) {
-    drawCross(
-        badCrosses[i].x + shakeX,
-        badCrosses[i].y + shakeY,
-        crossSize,
-        rms
-    );
-    }
-    // ————————————————————————————————————————————————
-    // create more texts during strong high frequency
-    if (high > 60 && frameCount % 10 === 0) {
-      createScaryTexts();
-    }
-
-    // draw scary texts
-    // ChatGPT helped me writing the for loop below, which iterates through the scaryTexts array in reverse order
-    for (let i = scaryTexts.length - 1; i >= 0; i--) {
-
-      let t = scaryTexts[i];
-
-      // move text to the left
-      t.x -= t.speed;
-
-      // adaptive glitch shake
-      let textShake = width * 0.004;
-
-      let textShakeX = random(-textShake, textShake);
-      let textShakeY = random(-textShake, textShake);
-
-      // glowing red text
-      fill(255, 30, 30, t.alpha);
-
-      textSize(t.size);
-
-      text(
-        t.text,
-        t.x + textShakeX,
-        t.y + textShakeY
-      );
-
-      // remove text after leaving screen
-      if (t.x < -width * 0.5) {
-        scaryTexts.splice(i, 1);
-      }
-    }
-
-  // ——————————————————————————————————————————
-
-  // glitch vertical lines
-   if (high > 55) {
-
-  // how many lines
-  let lineCount = floor(random(5, 20));
-
-  for (let i = 0; i < lineCount; i++) {
-
-    // random x position
-    let lineX = random(width);
-
-    // random width
-    let lineW = random(width * 0.0003, width * 0.004);
-
-    // random alpha
-    let lineAlpha = random(40, 180);
-
-    let lineH = height;
-    let lineY = 0;
-
-    // random colour
-    fill(
-      random(180, 255),
-      random(180, 255),
-      random(180, 255),
-      lineAlpha
-    );
+  for (let col = 0; col < WINDOW_COLS; col++) {
+    const cx = marginX + col * cellW + cellW / 2;
+    const startX = floor(cx - actualW / 2);
+    const startY = floor(cy - actualH / 2);
 
     noStroke();
 
+    for (let py = 0; py < PH; py++) {
+      for (let px = 0; px < PW; px++) {
+        const key = glass[py][px];
+        const colour = glassColour[key];
+
+        if (!colour) continue;
+
+        fill(colour[0], colour[1], colour[2]);
+        rect(
+          startX + px * pixSize,
+          startY + py * pixSize,
+          pixSize + 0.5,
+          pixSize + 0.5
+        );
+      }
+    }
+  }
+
+  const candleBaseY = cy + actualH / 2 + pixSize * 5;
+
+  let leftCandleX = marginX + cellW * 0.131;
+  let rightCandleX = marginX + cellW * 2.869;
+
+  let haloSize = 4.2 + rms * 30;
+
+  drawHalo(leftCandleX, candleBaseY, pixSize, 4.5, 18, haloSize, false);
+  drawHalo(leftCandleX, candleBaseY, pixSize, 10.5, 17, haloSize * 0.8, false);
+
+  drawHalo(rightCandleX, candleBaseY, pixSize, 5.5, 18, haloSize, true);
+  drawHalo(rightCandleX, candleBaseY, pixSize, 11.5, 17, haloSize * 0.8, true);
+
+  drawCandleGroup(leftCandleX, candleBaseY, pixSize, false);
+  drawCandleGroup(rightCandleX, candleBaseY, pixSize, true);
+
+  fill(252, 223, 37);
+
+  drawSpark(leftCandleX, candleBaseY, pixSize, 5, 18, smallJump, bigJump, false);
+  drawSpark(leftCandleX, candleBaseY, pixSize, 11, 16, smallJump, bigJump, false);
+
+  drawSpark(rightCandleX, candleBaseY, pixSize, 5, 18, smallJump, bigJump, true);
+  drawSpark(rightCandleX, candleBaseY, pixSize, 11, 16, smallJump, bigJump, true);
+
+  drawWeb(pixSize);
+
+  const maxThread = 18;
+  const cycleDur = 180;
+  const halfCycle = cycleDur / 2;
+  const t = frameCount % cycleDur;
+
+  const threadLen = t < halfCycle
+    ? map(t, 0, halfCycle, 0, maxThread)
+    : map(t, halfCycle, cycleDur, maxThread, 0);
+
+  const threadLenInt = floor(threadLen);
+
+  const spiderThreadX = cw - floor(SW / 2) * pixSize - pixSize;
+  const threadTopY = 0;
+  const spiderOffsetY = threadLenInt * pixSize;
+
+  noStroke();
+  fill(220, 220, 220);
+
+  for (let i = 0; i < threadLenInt; i++) {
     rect(
-      lineX,
-      lineY,
-      lineW,
-      lineH
+      spiderThreadX,
+      threadTopY + i * pixSize,
+      pixSize + 0.5,
+      pixSize + 0.5
     );
   }
-}
-// ─────────────────────────────
-    // nun image
+
+  drawSpider(pixSize, cw, spiderOffsetY);
+  drawCrosses(pixSize);
 
   let nunPixelSize = pixSize * 0.6;
 
   let displayH = height * 0.88;
-
-  let displayW =
-    displayH * (badNun.width / badNun.height);
+  let displayW = displayH * (openingNun.width / openingNun.height);
 
   if (displayW > width * 0.88) {
-
     displayW = width * 0.88;
-
-    displayH =
-      displayW * (badNun.height / badNun.width);
-
+    displayH = displayW * (openingNun.height / openingNun.width);
   }
 
-  // change size or keep
   displayW *= 1.1;
   displayH *= 1.1;
 
-  // center position
   let startX = width / 2 - displayW / 2;
-
   let startY = height - displayH;
 
-  badNun.loadPixels();
+  openingNun.loadPixels();
 
-  for (
-    let y = 0;
-    y < displayH;
-    y += nunPixelSize
-  ) {
+  for (let y = 0; y < displayH; y += nunPixelSize) {
+    for (let x = 0; x < displayW; x += nunPixelSize) {
+      let openingNunX = floor(map(x, 0, displayW, 0, openingNun.width));
+      let openingNunY = floor(map(y, 0, displayH, 0, openingNun.height));
 
-    for (
-      let x = 0;
-      x < displayW;
-      x += nunPixelSize
-    ) {
+      let index = (openingNunY * openingNun.width + openingNunX) * 4;
 
-      let badNunX = floor(
-        map(x, 0, displayW, 0, badNun.width)
-      );
-
-      let badNunY = floor(
-        map(y, 0, displayH, 0, badNun.height)
-      );
-
-      let index =
-        (badNunY * badNun.width + badNunX) * 4;
-
-      let r = badNun.pixels[index];
-
-      let g = badNun.pixels[index + 1];
-
-      let b = badNun.pixels[index + 2];
-
-      let a = badNun.pixels[index + 3];
+      let r = openingNun.pixels[index];
+      let g = openingNun.pixels[index + 1];
+      let b = openingNun.pixels[index + 2];
+      let a = openingNun.pixels[index + 3];
 
       if (a < 10) continue;
 
-      // random red glitch pixels
-      if (random(1) < 0.002) {
-
-      r = 255;
-      g = 40;
-      b = 40;
-      }
-
       noStroke();
-
-      fill(r*1.4, g*1.2, b*1.2, a);
+      fill(r, g, b, a);
 
       rect(
-        startX + x - shakeX,
-        startY + y - shakeY,
+        startX + x,
+        startY + y,
         nunPixelSize,
         nunPixelSize
       );
+    }
+  }
 
+  // 柏林噪声覆盖在图片最上层，并且慢慢累积
+  drawPerlinOverlay();
+  image(perlinLayer, 0, 0);
+}
+
+function drawPerlinOverlay() {
+  let yoff = 0;
+
+  for (let y = 0; y < perlinRows; y++) {
+    let xoff = 0;
+
+    for (let x = 0; x < perlinCols; x++) {
+      let index = x + y * perlinCols;
+
+      let angle = noise(xoff, yoff, zoff) * TWO_PI * 4;
+      let v = p5.Vector.fromAngle(angle);
+      v.setMag(0.3);
+
+      flowField[index] = v;
+
+      xoff += 0.05;
     }
 
+    yoff += 0.05;
+  }
+
+  zoff += zstep;
+
+  for (let p of particles) {
+    p.follow(flowField);
+    p.update();
+    p.edges();
+    p.show();
+  }
+}
+
+class Particle {
+  constructor() {
+    this.pos = createVector(random(width), random(height));
+    this.vel = createVector(0, 0);
+    this.acc = createVector(0, 0);
+    this.prevPos = this.pos.copy();
+    this.maxSpeed = maxSpeed;
+  }
+
+  follow(vectors) {
+    let x = floor(this.pos.x / gridSize);
+    let y = floor(this.pos.y / gridSize);
+
+    if (x < 0 || x >= perlinCols || y < 0 || y >= perlinRows) return;
+
+    let index = x + y * perlinCols;
+    let force = vectors[index];
+
+    if (force) {
+      this.applyForce(force);
+    }
+  }
+
+  applyForce(force) {
+    this.acc.add(force);
+  }
+
+  update() {
+    this.vel.add(this.acc);
+    this.vel.limit(this.maxSpeed);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+
+  show() {
+    let t = noise(this.pos.x * 0.01, this.pos.y * 0.01);
+
+    let r = lerp(255, 245, t);
+    let g = lerp(220, 230, t);
+    let b = lerp(230, 180, t);
+
+    perlinLayer.stroke(r, g, b, 35);
+    perlinLayer.strokeWeight(2);
+
+    perlinLayer.line(
+      this.pos.x,
+      this.pos.y,
+      this.prevPos.x,
+      this.prevPos.y
+    );
+
+    this.updatePrev();
+  }
+
+  updatePrev() {
+    this.prevPos.x = this.pos.x;
+    this.prevPos.y = this.pos.y;
+  }
+
+  edges() {
+    if (this.pos.x > width) {
+      this.pos.x = 0;
+      this.updatePrev();
+    }
+
+    if (this.pos.x < 0) {
+      this.pos.x = width;
+      this.updatePrev();
+    }
+
+    if (this.pos.y > height) {
+      this.pos.y = 0;
+      this.updatePrev();
+    }
+
+    if (this.pos.y < 0) {
+      this.pos.y = height;
+      this.updatePrev();
+    }
   }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-
-  randomiseCrosses();
-  createEyes(7);
+  initCrosses();
+  initPerlinOverlay();
 
   playButton.position(width * 0.02, height * 0.03);
 }
