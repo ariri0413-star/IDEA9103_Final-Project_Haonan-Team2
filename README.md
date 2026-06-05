@@ -33,11 +33,16 @@ The user interacts with this mechanic through the story choices. If the nun choo
 *Red Glitch Lines*
 
 ### 2. Time-based: Zhige Hu
-The time-based mechanic in our project is used to make the picture feel alive and emotionally reactive. We plan to use timers to gradually change the atmosphere depending on the player’s choices. Throughout the story, timed visual effects reflect the nun’s emotional state.
+The time-based mechanic is used to make the picture feel alive and emotionally reactive. This mechanic is created using frameCount, timed state changes, and frame-based animation cycles.
 
-In the initial church background, candlelights will flicker every few seconds through looping timed animations. We want to give the environment a breathing and uneasy feeling. If the player chooses to lie, timers will trigger glitch effects such as screen distortion, static noise, flashing error pop-ups, and sudden snow-screen interruptions at random intervals. At first, these effects appear briefly, but over time, they become more frequent and chaotic, making it feel as though the artwork itself is malfunctioning.
+In the opening church scene, floating crosses gradually fade in, remain visible for a short period, fade out, and then reappear at new random positions. In the top-right corner of the window, a spider repeatedly moves up and down on its thread. These animations enhance the church's atmosphere, making the environment feel more immersive and visually engaging.
 
-In contrast, if the player chooses honesty, the church environment will become brighter and warmer. Small pixel stars will begin appearing around the screen, continuously twinkling and gently scaling in and out through timed loops. A glowing halo will also appear above the nun’s head and softly float up and down. These animations create a calm and dreamlike atmosphere, symbolising healing and emotional redemption.
+In the hell scene, each pupil randomly shifts to a new position every 40 frames, creating the effect that the eyes are constantly looking around. This makes the hell scene feel more unsettling and alive, as if the environment is watching the user. 
+
+In the heaven scene, blue and yellow light rays rotate over time by updating the angle value every frame. And wings continuously fly from one side of the window to the other. These animations build a sense of spiritual elevation, creating a contrast with the darker scene of the project. 
+
+![Sketch](image/LightRays+Wings.png)
+*Rotating Light Rays and Flying Wings*
 
 ### 3. Perlin noise and randomness: Wenjun Gu
 The background is adorned with delicate floral patterns. While the player remains honest, the visuals employ a bright, warm color palette to cultivate a sacred and tranquil atmosphere. However, once the player chooses to "lie," the environmental tones instantly submerge into a somber combination of black and dark crimson, accompanied by a heavy "Glitch Art" effect characterized by shattering rectangular artifacts. The underlying Perlin noise transitions from a soft warm white into flowing dark red particles.Additionally, Perlin noise can simulate the dynamic movement of smoke and airflow when a candle is extinguished, while interacting with environmental parameters to generate smooth and natural visual effects, thereby enhancing the realism and immersion of the animation. This stark visual contrast intuitively manifests the collapse and distortion of the nun’s psyche, echoing the spiritual alienation brought by self-deception and immersing the player in a profound psychological horror experience.
