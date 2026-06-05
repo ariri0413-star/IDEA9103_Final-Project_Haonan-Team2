@@ -73,7 +73,6 @@ ChatGPT was used to assist with specific coding tasks in this project. It helped
 All AI-assisted code was reviewed, tested, and modified by the group members before being included in the final project. The code was adjusted to fit our visual design, scene layout, and p5.js project structure.
 
 ## 5. Interaction instructions
-
 - Click the **Play/Pause** button to start the audio.
 - Move the mouse across the screen to make a choice.
 - Hover over **Confess** to charge the holy path and enter the **Heaven ending**.
