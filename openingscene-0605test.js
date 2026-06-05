@@ -13,26 +13,20 @@ let analyser;
 // Play / pause button
 let playButton;
 let openingNun;
-// blood-like Perlin noise overlay
-let bloodLayer;
-let bloodParticles = [];
-let bloodFlowField = [];
 
-let bloodGridSize = 10;
-let flowCols, flowRows;
+let myFont;
 
-let bloodZoff = 0;
-let bloodZstep = 0.02;
+let angelPower = 1;
+let bloodPower = 1;
+let glitchPower = 1;
 
-let bloodParticleNums = 2200;
-let bloodMaxSpeed = 4;
-let bloodOverlayAlpha = 0;
 // preload the music
 function preload() {
   openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   openingNun = loadImage("image/nun1.png");
+  myFont = loadFont("font/Micro.otf");
 }
 
 function setup() {
@@ -47,7 +41,10 @@ function setup() {
   playButton = createButton("Play/Pause");
   playButton.position(width * 0.02, height * 0.03);
   playButton.mousePressed(playPause);
-  initBloodOverlay();
+
+  noCursor();
+
+  textFont(myFont);
 }
 
 // generate random cross positions once on load
@@ -69,6 +66,7 @@ function initCrosses() {
 
 // define the function for drawing flickering crosses across the background
 function drawCrosses(ps) {
+  rectMode(CORNER);
   noStroke();
   for (let cross of crosses) {
     if (cross.state === 'fadeIn') {
@@ -420,7 +418,69 @@ function drawSpider(ps, cw, offsetY) {
 
 // ─────────────────────────────────────────────
 
-// draw!! :P
+// ── Perlin Light Refraction: Light Beams Cast from the Stained Glass Window ──────────────
+// Colours are sampled from the blue tones of glassColour, with three beams aligned to the three window positions
+// noise() is used to slowly shift the width and horizontal position of the beams, simulating the subtle refraction of light through glass
+// Multiple layers of semi-transparent trapezoids are stacked to create a volumetric light fade effect
+function drawLightBeams(cw, ch) {
+  let t = frameCount * 0.004;  // Slow time progression, smaller values create a more mysterious effect
+
+  // The three light beams use the b1 / b2 / b3 colours from glassColour
+  const beams = [
+    { x: cw * 0.28, r:  41, g:  60, b: 171 },  // deep blue
+    { x: cw * 0.50, r:  45, g: 103, b: 168 },  // cerulean blue
+    { x: cw * 0.72, r: 143, g: 214, b: 240 },  // ice blue
+  ];
+
+  for (let beam of beams) {
+    // noise controls the horizontal movement and width variation of the light beams
+    let nx = noise(beam.x * 0.002, t) * 60 - 30;
+    let bw = noise(beam.x * 0.003, t + 100) * cw * 0.12 + cw * 0.04;
+
+   // Five semi-transparent trapezoid layers create soft-edged light beams, with outer layers becoming more transparent
+    for (let i = 0; i < 5; i++) {
+      let alpha  = map(i, 0, 4, 18, 4);   // Brightest in the centre, fading towards the edges
+      let spread = i * bw * 0.18;
+      fill(beam.r, beam.g, beam.b, alpha);
+      noStroke();
+      beginShape();
+        vertex(beam.x + nx - bw * 0.3 - spread, 0);
+        vertex(beam.x + nx + bw * 0.3 + spread, 0);
+        vertex(beam.x + nx + bw + spread * 2,   ch);
+        vertex(beam.x + nx - bw - spread * 2,   ch);
+      endShape(CLOSE);
+    }
+  }
+}
+
+// ── Perlin Refraction Spots: Ripple Projections of Light Refracted Through Stained Glass ──────────────
+// Each spot's position, size, and color are independently driven by noise()
+// Concentrated in the lower half of the screen, flattened ellipses simulate the perspective of slanted light spots
+function drawRefractionSpots(cw, ch) {
+  let t = frameCount * 0.006;
+  let spotCount = 12;
+
+  for (let i = 0; i < spotCount; i++) {
+    // noise controls each light spot's x position, y position, and size
+    let sx = noise(i * 3.7,        t)        * cw;
+    let sy = noise(i * 3.7 + 10,   t)        * ch * 0.5 + ch * 0.5; // Concentrated in the lower half of the screen
+    let sz = noise(i * 3.7 + 20,   t)        * 80 + 20;
+
+    // Color interpolation between blue tones, consistent with the light beams
+    let cr = noise(i * 1.1, t + 50);
+    let rr = lerp( 41, 143, cr);
+    let rg = lerp( 60, 214, cr);
+    let rb = lerp(171, 240, cr);
+
+    noStroke();
+    fill(rr, rg, rb, 22);
+    ellipse(sx, sy, sz * 2.5, sz);  // Flattened ellipses simulate the perspective of slanted light spots
+  }
+}
+
+// ─────────────────────────────────────────────
+
+// draw!!
 function draw() {
 
   // Control different jump strengths for layered flame motion
@@ -432,6 +492,12 @@ function draw() {
   const ch = height;
 
   background(12, 10, 22);
+
+  // ── Draw the Perlin refraction light beams first, as the bottom layer behind the window ────────
+  drawLightBeams(cw, ch);
+
+  // ── Then draw the ground light spot ripples as part of the background layer ───────────────
+  drawRefractionSpots(cw, ch);
 
   const marginX = cw * 0.03;
   const marginY = ch * 0.04;
@@ -519,7 +585,7 @@ function draw() {
   drawWeb(pixSize);
 
   // ── spider animation ──
-  // animate the spider thread extending and retracting, then calculate the spider’s position based on the thread length
+  // animate the spider thread extending and retracting, then calculate the spider's position based on the thread length
   const maxThread = 18;  
   const cycleDur = 180;  
   const halfCycle = cycleDur / 2;
@@ -624,16 +690,46 @@ function draw() {
     }
 
   }
-  drawBloodOverlay();
+
+  // ─────────────────────────────
+
+  // Mouse choice layer on top
+
+  push();
+
+  updateMousePower();
+
+  drawAngelScreenGlow(angelPower);
+
+  drawScreenGlitch(glitchPower);
+
+  let titleSize = constrain(width * 0.06, 32, 90);
+
+  let confessX = width * 0.28;
+
+  let deceiveX = width * 0.72;
+
+  let optionY = height * 0.5;
+
+  drawPixelHolySymbols(confessX, optionY, titleSize, angelPower);
+
+  drawBloodAroundText(deceiveX, optionY, titleSize, bloodPower);
+
+  drawOption("Confess", confessX, optionY, titleSize);
+
+  drawOption("Deceive", deceiveX, optionY, titleSize);
+
+  drawPixelCursor();
+
+  pop();
 }
+
 
 // resize and redraw when browser window changes size
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  playButton.position(width * 0.02, height * 0.03);
-
-  initCrosses();
-  initBloodOverlay();
+  //Position button relative to screen size
+  playButton.position(width * 0.02, height * 0.03); 
 }
 
 // Play or pause background music
@@ -646,152 +742,501 @@ function playPause() {
     playButton.html("Pause");
   }
 }
-function initBloodOverlay() {
-  bloodLayer = createGraphics(width, height);
-  bloodLayer.clear();
-  bloodLayer.noSmooth();
 
-  flowCols = floor(width / bloodGridSize);
-  flowRows = floor(height / bloodGridSize);
+function updateMousePower() {
 
-  bloodParticles = [];
-  bloodFlowField = [];
+  let leftZone = width / 3;
 
-  for (let i = 0; i < bloodParticleNums; i++) {
-    bloodParticles.push(new BloodParticle(true));
+  let rightZone = width * 2 / 3;
+
+  if (mouseX < leftZone) {
+
+    let amt = map(mouseX, 0, leftZone, 1, 0);
+
+    angelPower = lerp(angelPower, 1 + amt * 1.5, 0.08);
+
+    bloodPower = lerp(bloodPower, 1 - amt, 0.08);
+
+    glitchPower = lerp(glitchPower, 1 - amt, 0.08);
+
+  } else if (mouseX > rightZone) {
+
+    let amt = map(mouseX, rightZone, width, 0, 1);
+
+    angelPower = lerp(angelPower, 1 - amt, 0.08);
+
+    bloodPower = lerp(bloodPower, 1 + amt * 1.8, 0.08);
+
+    glitchPower = lerp(glitchPower, 1 + amt * 2.2, 0.08);
+
+  } else {
+
+    angelPower = lerp(angelPower, 1, 0.08);
+
+    bloodPower = lerp(bloodPower, 1, 0.08);
+
+    glitchPower = lerp(glitchPower, 1, 0.08);
+
   }
 
-  bloodOverlayAlpha = 0;
+  angelPower = constrain(angelPower, 0, 2.5);
+
+  bloodPower = constrain(bloodPower, 0, 3);
+
+  glitchPower = constrain(glitchPower, 0, 3.5);
+
 }
 
-function drawBloodOverlay() {
-  let yoff = 0;
+function drawAngelScreenGlow(power) {
 
-  for (let y = 0; y < flowRows; y++) {
-    let xoff = 0;
+  if (power <= 0.05) return;
 
-    for (let x = 0; x < flowCols; x++) {
-      let index = x + y * flowCols;
+  rectMode(CORNER);
 
-      let angle =
-        HALF_PI +
-        noise(xoff, yoff, bloodZoff) * 1.1 -
-        0.55;
+  noStroke();
 
-      let v = p5.Vector.fromAngle(angle);
-      v.setMag(0.18);
+  let alpha = map(power, 1, 2.5, 0, 35);
 
-      bloodFlowField[index] = v;
+  alpha = constrain(alpha, 0, 35);
 
-      xoff += 0.03;
+  fill(255, 190, 210, alpha);
+
+  rect(0, 0, width, height);
+
+  if (power > 1) {
+
+    for (let i = 0; i < 60 * (power - 1); i++) {
+
+      let px = random(width);
+
+      let py = random(height);
+
+      let s = random([6, 8, 10, 12, 16]);
+
+      if (random() < 0.5) {
+
+        fill(255, 230, 130, random(20, 60) * power);
+
+      } else {
+
+        fill(255, 150, 210, random(15, 55) * power);
+
+      }
+
+      rect(px, py, s, s);
+
     }
 
-    yoff += 0.03;
   }
 
-  bloodZoff += bloodZstep;
-
-  for (let p of bloodParticles) {
-    p.follow(bloodFlowField);
-    p.update();
-    p.edges();
-    p.show();
-  }
-
-  bloodOverlayAlpha = min(bloodOverlayAlpha + 3, 255);
-
-  tint(255, bloodOverlayAlpha);
-  image(bloodLayer, 0, 0);
-  noTint();
 }
 
-class BloodParticle {
-  constructor(firstTime = false) {
-    this.reset(firstTime);
-  }
+function drawPixelHolySymbols(x, y, size, power) {
 
-  reset(firstTime = false) {
-    this.pos = createVector(
-      random(width),
-      firstTime ? random(height) : random(-300, -20)
-    );
+  if (power <= 0.03) return;
 
-    this.vel = createVector(
-      random(-0.05, 0.05),
-      random(0.3, 0.8)
-    );
+  rectMode(CENTER);
 
-    this.acc = createVector(0, 0);
-    this.prevPos = this.pos.copy();
-    this.maxSpeed = bloodMaxSpeed;
-  }
+  noStroke();
 
-  follow(vectors) {
-    let x = floor(this.pos.x / bloodGridSize);
-    let y = floor(this.pos.y / bloodGridSize);
+  textSize(size);
 
-    if (x < 0 || x >= flowCols || y < 0 || y >= flowRows) return;
+  let t = frameCount * 0.03;
 
-    let index = x + y * flowCols;
-    let force = vectors[index];
+  for (let i = 0; i < 90 * power; i++) {
 
-    if (force) {
-      this.applyForce(force);
-    }
-  }
+    let px = random(width);
 
-  applyForce(force) {
-    this.acc.add(force);
-  }
+    let py = random(height);
 
-  update() {
-    this.vel.add(this.acc);
-    this.vel.limit(this.maxSpeed);
+    px += sin(t * 2 + i) * 8;
 
-    this.vel.y += 0.01;
-    this.vel.mult(0.985);
+    py += cos(t * 1.5 + i) * 8;
 
-    this.pos.add(this.vel);
-    this.acc.mult(0);
-  }
+    let s = random([4, 5, 6, 8]);
 
-  show() {
-    if (this.pos.y < 0) {
-      this.updatePrev();
-      return;
+    if (random() < 0.5) {
+
+      fill(255, 225, 120, random(25, 75) * power);
+
+    } else {
+
+      fill(255, 150, 205, random(20, 65) * power);
+
     }
 
-    bloodLayer.stroke(120, 0, 15, 200);
-    bloodLayer.strokeWeight(3.5);
+    rect(px, py, s, s);
 
-    bloodLayer.line(
-      this.pos.x,
-      this.pos.y,
-      this.prevPos.x,
-      this.prevPos.y
-    );
-
-    this.updatePrev();
   }
 
-  updatePrev() {
-    this.prevPos.x = this.pos.x;
-    this.prevPos.y = this.pos.y;
+  for (let i = 0; i < 45 * power; i++) {
+
+    let angle = random(TWO_PI);
+
+    let radius = random(size * 0.8, size * 3.2 * power);
+
+    let px = x + cos(angle) * radius;
+
+    let py = y + sin(angle) * radius;
+
+    let s = random([5, 7, 9]);
+
+    if (random() < 0.55) {
+
+      fill(255, 230, 130, random(70, 150) * power);
+
+    } else {
+
+      fill(255, 160, 210, random(55, 130) * power);
+
+    }
+
+    rect(px, py, s, s);
+
   }
 
-  edges() {
-    if (this.pos.y > height + 30) {
-      this.reset(false);
-    }
-
-    if (this.pos.x > width) {
-      this.pos.x = 0;
-      this.updatePrev();
-    }
-
-    if (this.pos.x < 0) {
-      this.pos.x = width;
-      this.updatePrev();
-    }
-  }
 }
+
+function drawBloodAroundText(x, y, size, power) {
+
+  if (power <= 0.03) return;
+
+  rectMode(CENTER);
+
+  noStroke();
+
+  textSize(size);
+
+  let textW = textWidth("Deceive");
+
+  let boxW = textW + size * 1.4;
+
+  let boxH = size * 1.6;
+
+  for (let i = 0; i < 90 * power; i++) {
+
+    let side = random() < 0.5 ? -1 : 1;
+
+    let px = x + side * random(boxW * 0.45, boxW * 0.95);
+
+    let py = y + random(-boxH * 0.7, boxH * 0.7);
+
+    let s = random([4, 6, 8, 10]);
+
+    fill(255, 0, 20, random(90, 220) * power);
+
+    rect(px, py, s, s);
+
+  }
+
+  for (let i = 0; i < 18 * power; i++) {
+
+    let side = random() < 0.5 ? -1 : 1;
+
+    let startX = x + side * random(boxW * 0.4, boxW * 0.75);
+
+    let startY = y - boxH * 0.4 + random(-20, 25);
+
+    let dripLength = random(50, 170) * power;
+
+    let blockSize = random([5, 7, 9]);
+
+    for (let j = 0; j < dripLength; j += blockSize * 1.4) {
+
+      let offsetX = noise(i * 0.3, j * 0.05, frameCount * 0.01) * 35 - 17;
+
+      let px = startX + offsetX;
+
+      let py = startY + j;
+
+      if (random() > 0.18) {
+
+        fill(220, 0, 25, random(120, 255) * power);
+
+        rect(px, py, blockSize, blockSize);
+
+      }
+
+    }
+
+    fill(180, 0, 20, 220 * power);
+
+    rect(startX + random(-12, 12), startY + dripLength, blockSize * 2, blockSize * 2);
+
+  }
+
+}
+
+function drawScreenGlitch(power) {
+
+  if (power <= 0.15) return;
+
+  rectMode(CORNER);
+
+  noStroke();
+
+  let glitchAmount = floor(8 * power);
+
+  for (let i = 0; i < glitchAmount; i++) {
+
+    if (random() < 0.18 * power) {
+
+      let gy = random(height);
+
+      let h = random(3, 12);
+
+      let gx = random(width);
+
+      let w = random(30, 160) * power;
+
+      fill(255, 0, 20, 45 * power);
+
+      rect(gx, gy, w, h);
+
+    }
+
+  }
+
+}
+
+function drawOption(label, x, y, size) {
+
+  push();
+
+  textFont(myFont);
+
+  textAlign(CENTER, CENTER);
+
+  textSize(size);
+
+  fill(0);
+
+  text(label, x + 5, y + 5);
+
+  fill(255);
+
+  text(label, x, y);
+
+  pop();
+
+}
+
+function drawPixelCursor() {
+  push()
+
+  rectMode(CENTER);
+
+  noStroke();
+
+  let leftZone = width / 3;
+
+  let rightZone = width * 2 / 3;
+
+  let yellowPower = 0;
+
+  let redPower = 0;
+
+  if (mouseX < leftZone) {
+
+    yellowPower = map(mouseX, leftZone, 0, 0, 1);
+
+  } else if (mouseX > rightZone) {
+
+    redPower = map(mouseX, rightZone, width, 0, 1);
+
+  }
+
+  let u = constrain(width * 0.007, 5, 9);
+
+  push();
+
+  translate(mouseX, mouseY);
+
+  rotate(-PI / 4);
+
+  let bladeMain;
+
+  let bladeLight;
+
+  let bladeShadow;
+
+  let handleMain;
+
+  let guardColor;
+
+  if (yellowPower > redPower) {
+
+    bladeMain = color(255, 240, 170);
+
+    bladeLight = color(255, 255, 230);
+
+    bladeShadow = color(255, 200, 80);
+
+    handleMain = color(255, 210, 110);
+
+    guardColor = color(255, 230, 120);
+
+  } else if (redPower > yellowPower) {
+
+    bladeMain = color(230, 40, 50);
+
+    bladeLight = color(255, 120, 120);
+
+    bladeShadow = color(120, 0, 20);
+
+    handleMain = color(80, 0, 15);
+
+    guardColor = color(180, 0, 30);
+
+  } else {
+
+    bladeMain = color(220);
+
+    bladeLight = color(255);
+
+    bladeShadow = color(130);
+
+    handleMain = color(90);
+
+    guardColor = color(160);
+
+  }
+
+  fill(0, 190);
+
+  pixelBlock(0, -8, u);
+
+  pixelBlock(-1, -7, u);
+
+  pixelBlock(0, -7, u);
+
+  pixelBlock(1, -7, u);
+
+  for (let gy = -6; gy <= 1; gy++) {
+
+    pixelBlock(-1, gy, u);
+
+    pixelBlock(0, gy, u);
+
+    pixelBlock(1, gy, u);
+
+  }
+
+  for (let gx = -4; gx <= 4; gx++) {
+
+    pixelBlock(gx, 2, u);
+
+  }
+
+  pixelBlock(-1, 3, u);
+
+  pixelBlock(0, 3, u);
+
+  pixelBlock(1, 3, u);
+
+  pixelBlock(-1, 4, u);
+
+  pixelBlock(0, 4, u);
+
+  pixelBlock(1, 4, u);
+
+  pixelBlock(-1, 5, u);
+
+  pixelBlock(0, 5, u);
+
+  pixelBlock(1, 5, u);
+
+  for (let gx = -2; gx <= 2; gx++) {
+
+    pixelBlock(gx, 6, u);
+
+  }
+
+  fill(bladeMain);
+
+  pixelBlock(0, -8, u);
+
+  pixelBlock(-1, -7, u);
+
+  pixelBlock(0, -7, u);
+
+  pixelBlock(1, -7, u);
+
+  for (let gy = -6; gy <= 1; gy++) {
+
+    pixelBlock(-1, gy, u);
+
+    pixelBlock(0, gy, u);
+
+    pixelBlock(1, gy, u);
+
+  }
+
+  fill(bladeLight);
+
+  for (let gy = -6; gy <= 0; gy++) {
+
+    pixelBlock(-1, gy, u);
+
+  }
+
+  pixelBlock(0, -7, u);
+
+  fill(bladeShadow);
+
+  for (let gy = -6; gy <= 1; gy++) {
+
+    pixelBlock(1, gy, u);
+
+  }
+
+  fill(guardColor);
+
+  for (let gx = -4; gx <= 4; gx++) {
+
+    pixelBlock(gx, 2, u);
+
+  }
+
+  fill(bladeLight);
+
+  pixelBlock(-4, 2, u);
+
+  pixelBlock(4, 2, u);
+
+  fill(handleMain);
+
+  pixelBlock(0, 3, u);
+
+  pixelBlock(0, 4, u);
+
+  pixelBlock(0, 5, u);
+
+  fill(guardColor);
+
+  pixelBlock(-1, 3, u);
+
+  pixelBlock(1, 3, u);
+
+  pixelBlock(-1, 5, u);
+
+  pixelBlock(1, 5, u);
+
+  fill(guardColor);
+
+  for (let gx = -2; gx <= 2; gx++) {
+
+    pixelBlock(gx, 6, u);
+
+  }
+
+  pop();
+
+}
+
+function pixelBlock(gx, gy, u) {
+
+  rect(gx * u, gy * u, u, u);
+
+}
+

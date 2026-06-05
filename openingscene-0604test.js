@@ -405,14 +405,14 @@ function drawSpider(ps, cw, offsetY) {
 
 // ─────────────────────────────────────────────
 
-// ── Perlin 光折射：从彩色玻璃窗投下的光柱 ──────────────
-// 颜色取自 glassColour 蓝色系，三束光柱对应三扇窗户的位置
-// noise() 驱动光束宽度与水平位置缓慢漂移，模拟玻璃的折射颤动
-// 用多层叠加的半透明梯形营造体积光衰减感
+// ── Perlin Light Refraction: Light Beams Cast from the Stained Glass Window ──────────────
+// Colours are sampled from the blue tones of glassColour, with three beams aligned to the three window positions
+// noise() is used to slowly shift the width and horizontal position of the beams, simulating the subtle refraction of light through glass
+// Multiple layers of semi-transparent trapezoids are stacked to create a volumetric light fade effect
 function drawLightBeams(cw, ch) {
-  let t = frameCount * 0.004;  // 慢速时间轴，越小越神秘
+  let t = frameCount * 0.004;  // Slow time progression, smaller values create a more mysterious effect
 
-  // 三束光柱颜色对应 glassColour 的 b1 / b2 / b3
+  // The three light beams use the b1 / b2 / b3 colours from glassColour
   const beams = [
     { x: cw * 0.28, r:  41, g:  60, b: 171 },  // deep blue
     { x: cw * 0.50, r:  45, g: 103, b: 168 },  // cerulean blue
@@ -420,13 +420,13 @@ function drawLightBeams(cw, ch) {
   ];
 
   for (let beam of beams) {
-    // noise 驱动光束的水平颤动幅度和宽度
+    // noise controls the horizontal movement and width variation of the light beams
     let nx = noise(beam.x * 0.002, t) * 60 - 30;
     let bw = noise(beam.x * 0.003, t + 100) * cw * 0.12 + cw * 0.04;
 
-    // 用 5 层半透明梯形叠加出柔边光柱，越外层越透明
+   // Five semi-transparent trapezoid layers create soft-edged light beams, with outer layers becoming more transparent
     for (let i = 0; i < 5; i++) {
-      let alpha  = map(i, 0, 4, 18, 4);   // 中心最亮，边缘渐淡
+      let alpha  = map(i, 0, 4, 18, 4);   // Brightest in the centre, fading towards the edges
       let spread = i * bw * 0.18;
       fill(beam.r, beam.g, beam.b, alpha);
       noStroke();
@@ -440,20 +440,20 @@ function drawLightBeams(cw, ch) {
   }
 }
 
-// ── Perlin 光斑：玻璃折射在地面/墙壁上的涟漪投影 ────────
-// 每个光斑的位置、大小、颜色均由 noise() 独立驱动
-// 集中在屏幕下半区，扁椭圆形态模拟斜射光斑的透视感
+// ── Perlin Refraction Spots: Ripple Projections of Light Refracted Through Stained Glass ──────────────
+// Each spot's position, size, and color are independently driven by noise()
+// Concentrated in the lower half of the screen, flattened ellipses simulate the perspective of slanted light spots
 function drawRefractionSpots(cw, ch) {
   let t = frameCount * 0.006;
   let spotCount = 12;
 
   for (let i = 0; i < spotCount; i++) {
-    // noise 决定每个光斑的 x / y / 尺寸
+    // noise controls each light spot's x position, y position, and size
     let sx = noise(i * 3.7,        t)        * cw;
-    let sy = noise(i * 3.7 + 10,   t)        * ch * 0.5 + ch * 0.5; // 集中在下半屏
+    let sy = noise(i * 3.7 + 10,   t)        * ch * 0.5 + ch * 0.5; // Concentrated in the lower half of the screen
     let sz = noise(i * 3.7 + 20,   t)        * 80 + 20;
 
-    // 颜色在蓝色系之间插值，与光柱颜色保持一致
+    // Color interpolation between blue tones, consistent with the light beams
     let cr = noise(i * 1.1, t + 50);
     let rr = lerp( 41, 143, cr);
     let rg = lerp( 60, 214, cr);
@@ -461,13 +461,13 @@ function drawRefractionSpots(cw, ch) {
 
     noStroke();
     fill(rr, rg, rb, 22);
-    ellipse(sx, sy, sz * 2.5, sz);  // 扁椭圆更像地面投影
+    ellipse(sx, sy, sz * 2.5, sz);  // Flattened ellipses simulate the perspective of slanted light spots
   }
 }
 
 // ─────────────────────────────────────────────
 
-// draw!! :P
+// draw!!
 function draw() {
 
   // Control different jump strengths for layered flame motion
@@ -480,10 +480,10 @@ function draw() {
 
   background(12, 10, 22);
 
-  // ── 先绘制 Perlin 折射光柱（最底层，在窗户背后）────────
+  // ── Draw the Perlin refraction light beams first, as the bottom layer behind the window ────────
   drawLightBeams(cw, ch);
 
-  // ── 再绘制地面光斑涟漪（同属背景层）────────────────────
+  // ── Then draw the ground light spot ripples as part of the background layer ───────────────
   drawRefractionSpots(cw, ch);
 
   const marginX = cw * 0.03;
