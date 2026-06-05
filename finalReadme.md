@@ -78,7 +78,16 @@ All AI-assisted code was reviewed, tested, and modified by the group members bef
 ## 5. External references:
 
 ## 6. Interaction instructions
-All four mechanics work together within the same pixel-art confession room and respond to the player’s choices in real time. The user input mechanic controls the nun’s decisions, while the time-based mechanic gradually changes the atmosphere and pacing of the scene. Perlin noise and randomness generate unstable glitch effects and shifting particles, making the environment feel emotionally corrupted. At the same time, the audio mechanic uses sound frequencies to animate the candle flame, cross, halo, and red glitch lines. Together, these mechanics create a unified interactive experience in which sound, visuals, and player choices continuously shape the emotional state of the world and the nun’s psychological journey.
+
+ Click the **Play/Pause** button to start the audio and activate the experience.
+
+ Slowly move the mouse across the screen to make a choice.
+
+ Moving the cursor towards the **left side** generates more holy particles and visual effects. This path gradually leads to the **Heaven ending**.
+
+ Moving the cursor towards the **right side** generates more red glitch effects and visual corruption. This path gradually leads to the **Hell ending**.
+
+ The visuals react to both the audio and the mouse position. Different choices create different atmospheres and outcomes.
 
 ![Sketch](image/Concept1.png)
 
