@@ -1,14 +1,6 @@
-# The Last Prayer
+## Project Title：The Last Prayer
 
-<h2 style="color:#B95463; opacity:0.85;">
-Content Warning
-</h2>
-
-<p style="color:#B95463; opacity:0.85;">
-This project contains horror elements, glitch visual effects, flashing imagery, and religious themes that some viewers may find unsettling.
-</p>
-
-## 1. Inspiration
+## Part 1: Project Direction
 
  Our team will create an original pixel-art interactive artwork inspired by the visual atmosphere of The Starry Night, as well as psychological narrative games such as Needy Streamer Overload and Rusty Lake. 
 
@@ -23,16 +15,13 @@ This project contains horror elements, glitch visual effects, flashing imagery, 
 ![Sketch](image/TheStarryNight.png)
 *The Starry Night*
 
-## 2. Techniques
+## Part 2: Mechanics
+### 1. Audio: Yusi Zhou
+The audio mechanic uses the level and frequency content of an audio track to control the atmosphere and visual changes inside the confession room. This mechanic will be created using p5.FFT analysis, allowing the soundtrack to directly influence the environment and emotional tone of the scene. The candle flame reacts to the volume of the audio. When the soundtrack becomes louder, the flame flickers more strongly, while the circular halo behind the candle expands and brightens. This creates a sacred but unstable atmosphere that reflects the emotional condition of the character.
 
+The soundtrack also affects the cross animation. Low-frequency sounds cause the cross to pulse slowly, creating a breathing or heartbeat-like movement. As the audio becomes darker and more intense, the cross begins to display glitch-like visual effects such as duplicated shadows, slight position shifts, and flickering movement. At the same time, sharp high-frequency sounds generate red vertical glitch lines across the screen, creating a corrupted digital effect inspired by psychological horror and glitch aesthetics.
 
-## 3. Mechanic ownership
-### 3.1. Audio: Yusi Zhou
-The audio mechanic uses the level and frequency content of an audio track to control the atmosphere and visual changes inside the confession room. This mechanic is created using p5.FFT analysis, allowing the soundtrack to directly influence the environment and emotional tone of the scene. 
-
-The candle flame reacts to the volume of the audio. When the soundtrack becomes louder, the flame flickers more strongly, while the circular halo behind the candle expands. The soundtrack also affects the cross animation. Changes in audio volume cause the cross to pulse and flicker continuously, creating an unstable religious visual effect. High-frequency audio triggers sudden shaking movements in the cross, making it appear corrupted and disturbed. At the same time, sharp sounds generate frightening text flashes and grey-white glitch lines across the screen, producing a broken digital effect inspired by psychological horror and glitch aesthetics. In the heaven scene, the hearts and crosses float up and down based on the audio volume. Louder audio creates stronger floating movement, giving the ending a soft and sacred atmosphere connected to the music.
-
-The user interacts with this mechanic through the story choices. If the nun chooses to face the truth, the audio remains calm and soft, keeping the visual effects stable and gentle. If she chooses to lie, the soundtrack gradually becomes heavier and more distorted, causing the candle, cross, glitch lines, and disturbing text effects to become increasingly unstable. This directly connects to our project vision by using sound-driven visual changes to represent guilt, self-deception, and psychological collapse.
+The user interacts with this mechanic through the story choices. If the nun chooses to face the truth, the audio remains calm and soft, keeping the visual effects stable and warm. If she chooses to lie, the soundtrack gradually becomes heavier and more distorted, causing the candle, cross, and glitch effects to become increasingly unstable. This connects directly to our project vision by using sound-driven visual changes to represent guilt, self-deception, and psychological collapse.
 
 ![Sketch](image/candle2.jpg)
 *Candle Flame Flickering*
@@ -41,16 +30,16 @@ The user interacts with this mechanic through the story choices. If the nun choo
 *Christian Cross Shifting*
 
 ![Sketch](image/RedLines.png)
-*Glitch Lines*
+*Red Glitch Lines*
 
-### 3.2. Time-based: Zhige Hu
+### 2. Time-based: Zhige Hu
 The time-based mechanic in our project is used to make the picture feel alive and emotionally reactive. We plan to use timers to gradually change the atmosphere depending on the player’s choices. Throughout the story, timed visual effects reflect the nun’s emotional state.
 
 In the initial church background, candlelights will flicker every few seconds through looping timed animations. We want to give the environment a breathing and uneasy feeling. If the player chooses to lie, timers will trigger glitch effects such as screen distortion, static noise, flashing error pop-ups, and sudden snow-screen interruptions at random intervals. At first, these effects appear briefly, but over time, they become more frequent and chaotic, making it feel as though the artwork itself is malfunctioning.
 
 In contrast, if the player chooses honesty, the church environment will become brighter and warmer. Small pixel stars will begin appearing around the screen, continuously twinkling and gently scaling in and out through timed loops. A glowing halo will also appear above the nun’s head and softly float up and down. These animations create a calm and dreamlike atmosphere, symbolising healing and emotional redemption.
 
-### 3.3. Perlin noise and randomness: Wenjun Gu
+### 3. Perlin noise and randomness: Wenjun Gu
 The background is adorned with delicate floral patterns. While the player remains honest, the visuals employ a bright, warm color palette to cultivate a sacred and tranquil atmosphere. However, once the player chooses to "lie," the environmental tones instantly submerge into a somber combination of black and dark crimson, accompanied by a heavy "Glitch Art" effect characterized by shattering rectangular artifacts. The underlying Perlin noise transitions from a soft warm white into flowing dark red particles.Additionally, Perlin noise can simulate the dynamic movement of smoke and airflow when a candle is extinguished, while interacting with environmental parameters to generate smooth and natural visual effects, thereby enhancing the realism and immersion of the animation. This stark visual contrast intuitively manifests the collapse and distortion of the nun’s psyche, echoing the spiritual alienation brought by self-deception and immersing the player in a profound psychological horror experience.
 
 ![Sketch](image/FlowerLight.png)
@@ -61,7 +50,7 @@ The background is adorned with delicate floral patterns. While the player remain
 
 ![Sketch](image/RedGlitch.png)
 
-### 3.4. User input: Yang Zhou
+### 4. User input: Yang Zhou
 The User Input mechanic allows players to directly influence the development of the story through keyboard and mouse interactions. 
 
 During key moments in the narrative, the player must make choices for the nun: whether to confront the truth or lie to escape reality. These decisions are made by clicking dialogue options or pressing assigned keys on the keyboard. Each choice immediately changes the visual atmosphere of the game. When the player chooses to face the truth, the environment gradually becomes warmer and brighter, with calmer movement and visuals. When the player chooses to lie, the screen begins to show glitches, distortion, and unstable visual effects. 
@@ -70,14 +59,7 @@ During these visual transformations, players can also interact with the glitch e
 
 ![Sketch](image/UserInput1.png)
 
-## 4. AI acknowledgement
-ChatGPT was used to assist with specific coding tasks in this project. It helped calculate the pixel grid size so that visual elements could keep the same scale across different screen sizes and scenes. It was also used to help generate mirrored pixel images, such as candles or decorative objects, so the left and right sides of the scene could match visually. In addition, ChatGPT mainly helped with position calculations for visual elements, including calculating symmetrical positions, spacing between objects, and responsive placement based on the canvas size. This helped visual elements stay aligned and balanced across different scenes.
-
-All AI-assisted code was reviewed, tested, and modified by the group members before being included in the final project. The code was adjusted to fit our visual design, scene layout, and p5.js project structure.
-
-## 5. External references:
-
-## 6. Interaction instructions
+## Part 3: Putting It Together
 All four mechanics work together within the same pixel-art confession room and respond to the player’s choices in real time. The user input mechanic controls the nun’s decisions, while the time-based mechanic gradually changes the atmosphere and pacing of the scene. Perlin noise and randomness generate unstable glitch effects and shifting particles, making the environment feel emotionally corrupted. At the same time, the audio mechanic uses sound frequencies to animate the candle flame, cross, halo, and red glitch lines. Together, these mechanics create a unified interactive experience in which sound, visuals, and player choices continuously shape the emotional state of the world and the nun’s psychological journey.
 
 ![Sketch](image/Concept1.png)
