@@ -26,7 +26,7 @@ function setup() {
 
 function draw() {
 
-  background(20);
+  clear(); // 透明背景
 
   updateMousePower();
 
