@@ -13,12 +13,20 @@ let analyser;
 // Play / pause button
 let playButton;
 let openingNun;
+
+let myFont;
+
+let angelPower = 1;
+let bloodPower = 1;
+let glitchPower = 1;
+
 // preload the music
 function preload() {
   openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   openingNun = loadImage("image/nun1.png");
+  myFont = loadFont("font/Micro.otf");
 }
 
 function setup() {
@@ -33,6 +41,10 @@ function setup() {
   playButton = createButton("Play/Pause");
   playButton.position(width * 0.02, height * 0.03);
   playButton.mousePressed(playPause);
+
+  noCursor();
+
+  textFont(myFont);
 }
 
 // generate random cross positions once on load
@@ -677,7 +689,40 @@ function draw() {
     }
 
   }
+
+  // ─────────────────────────────
+
+  // Mouse choice layer on top
+
+  push();
+
+  updateMousePower();
+
+  drawAngelScreenGlow(angelPower);
+
+  drawScreenGlitch(glitchPower);
+
+  let titleSize = constrain(width * 0.06, 32, 90);
+
+  let confessX = width * 0.28;
+
+  let deceiveX = width * 0.72;
+
+  let optionY = height * 0.5;
+
+  drawPixelHolySymbols(confessX, optionY, titleSize, angelPower);
+
+  drawBloodAroundText(deceiveX, optionY, titleSize, bloodPower);
+
+  drawOption("Confess", confessX, optionY, titleSize);
+
+  drawOption("Deceive", deceiveX, optionY, titleSize);
+
+  drawPixelCursor();
+
+  pop();
 }
+
 
 // resize and redraw when browser window changes size
 function windowResized() {
@@ -696,3 +741,501 @@ function playPause() {
     playButton.html("Pause");
   }
 }
+
+function updateMousePower() {
+
+  let leftZone = width / 3;
+
+  let rightZone = width * 2 / 3;
+
+  if (mouseX < leftZone) {
+
+    let amt = map(mouseX, 0, leftZone, 1, 0);
+
+    angelPower = lerp(angelPower, 1 + amt * 1.5, 0.08);
+
+    bloodPower = lerp(bloodPower, 1 - amt, 0.08);
+
+    glitchPower = lerp(glitchPower, 1 - amt, 0.08);
+
+  } else if (mouseX > rightZone) {
+
+    let amt = map(mouseX, rightZone, width, 0, 1);
+
+    angelPower = lerp(angelPower, 1 - amt, 0.08);
+
+    bloodPower = lerp(bloodPower, 1 + amt * 1.8, 0.08);
+
+    glitchPower = lerp(glitchPower, 1 + amt * 2.2, 0.08);
+
+  } else {
+
+    angelPower = lerp(angelPower, 1, 0.08);
+
+    bloodPower = lerp(bloodPower, 1, 0.08);
+
+    glitchPower = lerp(glitchPower, 1, 0.08);
+
+  }
+
+  angelPower = constrain(angelPower, 0, 2.5);
+
+  bloodPower = constrain(bloodPower, 0, 3);
+
+  glitchPower = constrain(glitchPower, 0, 3.5);
+
+}
+
+function drawAngelScreenGlow(power) {
+
+  if (power <= 0.05) return;
+
+  rectMode(CORNER);
+
+  noStroke();
+
+  let alpha = map(power, 1, 2.5, 0, 35);
+
+  alpha = constrain(alpha, 0, 35);
+
+  fill(255, 190, 210, alpha);
+
+  rect(0, 0, width, height);
+
+  if (power > 1) {
+
+    for (let i = 0; i < 60 * (power - 1); i++) {
+
+      let px = random(width);
+
+      let py = random(height);
+
+      let s = random([6, 8, 10, 12, 16]);
+
+      if (random() < 0.5) {
+
+        fill(255, 230, 130, random(20, 60) * power);
+
+      } else {
+
+        fill(255, 150, 210, random(15, 55) * power);
+
+      }
+
+      rect(px, py, s, s);
+
+    }
+
+  }
+
+}
+
+function drawPixelHolySymbols(x, y, size, power) {
+
+  if (power <= 0.03) return;
+
+  rectMode(CENTER);
+
+  noStroke();
+
+  textSize(size);
+
+  let t = frameCount * 0.03;
+
+  for (let i = 0; i < 90 * power; i++) {
+
+    let px = random(width);
+
+    let py = random(height);
+
+    px += sin(t * 2 + i) * 8;
+
+    py += cos(t * 1.5 + i) * 8;
+
+    let s = random([4, 5, 6, 8]);
+
+    if (random() < 0.5) {
+
+      fill(255, 225, 120, random(25, 75) * power);
+
+    } else {
+
+      fill(255, 150, 205, random(20, 65) * power);
+
+    }
+
+    rect(px, py, s, s);
+
+  }
+
+  for (let i = 0; i < 45 * power; i++) {
+
+    let angle = random(TWO_PI);
+
+    let radius = random(size * 0.8, size * 3.2 * power);
+
+    let px = x + cos(angle) * radius;
+
+    let py = y + sin(angle) * radius;
+
+    let s = random([5, 7, 9]);
+
+    if (random() < 0.55) {
+
+      fill(255, 230, 130, random(70, 150) * power);
+
+    } else {
+
+      fill(255, 160, 210, random(55, 130) * power);
+
+    }
+
+    rect(px, py, s, s);
+
+  }
+
+}
+
+function drawBloodAroundText(x, y, size, power) {
+
+  if (power <= 0.03) return;
+
+  rectMode(CENTER);
+
+  noStroke();
+
+  textSize(size);
+
+  let textW = textWidth("Deceive");
+
+  let boxW = textW + size * 1.4;
+
+  let boxH = size * 1.6;
+
+  for (let i = 0; i < 90 * power; i++) {
+
+    let side = random() < 0.5 ? -1 : 1;
+
+    let px = x + side * random(boxW * 0.45, boxW * 0.95);
+
+    let py = y + random(-boxH * 0.7, boxH * 0.7);
+
+    let s = random([4, 6, 8, 10]);
+
+    fill(255, 0, 20, random(90, 220) * power);
+
+    rect(px, py, s, s);
+
+  }
+
+  for (let i = 0; i < 18 * power; i++) {
+
+    let side = random() < 0.5 ? -1 : 1;
+
+    let startX = x + side * random(boxW * 0.4, boxW * 0.75);
+
+    let startY = y - boxH * 0.4 + random(-20, 25);
+
+    let dripLength = random(50, 170) * power;
+
+    let blockSize = random([5, 7, 9]);
+
+    for (let j = 0; j < dripLength; j += blockSize * 1.4) {
+
+      let offsetX = noise(i * 0.3, j * 0.05, frameCount * 0.01) * 35 - 17;
+
+      let px = startX + offsetX;
+
+      let py = startY + j;
+
+      if (random() > 0.18) {
+
+        fill(220, 0, 25, random(120, 255) * power);
+
+        rect(px, py, blockSize, blockSize);
+
+      }
+
+    }
+
+    fill(180, 0, 20, 220 * power);
+
+    rect(startX + random(-12, 12), startY + dripLength, blockSize * 2, blockSize * 2);
+
+  }
+
+}
+
+function drawScreenGlitch(power) {
+
+  if (power <= 0.15) return;
+
+  rectMode(CORNER);
+
+  noStroke();
+
+  let glitchAmount = floor(8 * power);
+
+  for (let i = 0; i < glitchAmount; i++) {
+
+    if (random() < 0.18 * power) {
+
+      let gy = random(height);
+
+      let h = random(3, 12);
+
+      let gx = random(width);
+
+      let w = random(30, 160) * power;
+
+      fill(255, 0, 20, 45 * power);
+
+      rect(gx, gy, w, h);
+
+    }
+
+  }
+
+}
+
+function drawOption(label, x, y, size) {
+
+  push();
+
+  textFont(myFont);
+
+  textAlign(CENTER, CENTER);
+
+  textSize(size);
+
+  fill(0);
+
+  text(label, x + 5, y + 5);
+
+  fill(255);
+
+  text(label, x, y);
+
+  pop();
+
+}
+
+function drawPixelCursor() {
+  push()
+
+  rectMode(CENTER);
+
+  noStroke();
+
+  let leftZone = width / 3;
+
+  let rightZone = width * 2 / 3;
+
+  let yellowPower = 0;
+
+  let redPower = 0;
+
+  if (mouseX < leftZone) {
+
+    yellowPower = map(mouseX, leftZone, 0, 0, 1);
+
+  } else if (mouseX > rightZone) {
+
+    redPower = map(mouseX, rightZone, width, 0, 1);
+
+  }
+
+  let u = constrain(width * 0.007, 5, 9);
+
+  push();
+
+  translate(mouseX, mouseY);
+
+  rotate(-PI / 4);
+
+  let bladeMain;
+
+  let bladeLight;
+
+  let bladeShadow;
+
+  let handleMain;
+
+  let guardColor;
+
+  if (yellowPower > redPower) {
+
+    bladeMain = color(255, 240, 170);
+
+    bladeLight = color(255, 255, 230);
+
+    bladeShadow = color(255, 200, 80);
+
+    handleMain = color(255, 210, 110);
+
+    guardColor = color(255, 230, 120);
+
+  } else if (redPower > yellowPower) {
+
+    bladeMain = color(230, 40, 50);
+
+    bladeLight = color(255, 120, 120);
+
+    bladeShadow = color(120, 0, 20);
+
+    handleMain = color(80, 0, 15);
+
+    guardColor = color(180, 0, 30);
+
+  } else {
+
+    bladeMain = color(220);
+
+    bladeLight = color(255);
+
+    bladeShadow = color(130);
+
+    handleMain = color(90);
+
+    guardColor = color(160);
+
+  }
+
+  fill(0, 190);
+
+  pixelBlock(0, -8, u);
+
+  pixelBlock(-1, -7, u);
+
+  pixelBlock(0, -7, u);
+
+  pixelBlock(1, -7, u);
+
+  for (let gy = -6; gy <= 1; gy++) {
+
+    pixelBlock(-1, gy, u);
+
+    pixelBlock(0, gy, u);
+
+    pixelBlock(1, gy, u);
+
+  }
+
+  for (let gx = -4; gx <= 4; gx++) {
+
+    pixelBlock(gx, 2, u);
+
+  }
+
+  pixelBlock(-1, 3, u);
+
+  pixelBlock(0, 3, u);
+
+  pixelBlock(1, 3, u);
+
+  pixelBlock(-1, 4, u);
+
+  pixelBlock(0, 4, u);
+
+  pixelBlock(1, 4, u);
+
+  pixelBlock(-1, 5, u);
+
+  pixelBlock(0, 5, u);
+
+  pixelBlock(1, 5, u);
+
+  for (let gx = -2; gx <= 2; gx++) {
+
+    pixelBlock(gx, 6, u);
+
+  }
+
+  fill(bladeMain);
+
+  pixelBlock(0, -8, u);
+
+  pixelBlock(-1, -7, u);
+
+  pixelBlock(0, -7, u);
+
+  pixelBlock(1, -7, u);
+
+  for (let gy = -6; gy <= 1; gy++) {
+
+    pixelBlock(-1, gy, u);
+
+    pixelBlock(0, gy, u);
+
+    pixelBlock(1, gy, u);
+
+  }
+
+  fill(bladeLight);
+
+  for (let gy = -6; gy <= 0; gy++) {
+
+    pixelBlock(-1, gy, u);
+
+  }
+
+  pixelBlock(0, -7, u);
+
+  fill(bladeShadow);
+
+  for (let gy = -6; gy <= 1; gy++) {
+
+    pixelBlock(1, gy, u);
+
+  }
+
+  fill(guardColor);
+
+  for (let gx = -4; gx <= 4; gx++) {
+
+    pixelBlock(gx, 2, u);
+
+  }
+
+  fill(bladeLight);
+
+  pixelBlock(-4, 2, u);
+
+  pixelBlock(4, 2, u);
+
+  fill(handleMain);
+
+  pixelBlock(0, 3, u);
+
+  pixelBlock(0, 4, u);
+
+  pixelBlock(0, 5, u);
+
+  fill(guardColor);
+
+  pixelBlock(-1, 3, u);
+
+  pixelBlock(1, 3, u);
+
+  pixelBlock(-1, 5, u);
+
+  pixelBlock(1, 5, u);
+
+  fill(guardColor);
+
+  for (let gx = -2; gx <= 2; gx++) {
+
+    pixelBlock(gx, 6, u);
+
+  }
+
+  pop();
+
+}
+
+function pixelBlock(gx, gy, u) {
+
+  rect(gx * u, gy * u, u, u);
+
+}
+
