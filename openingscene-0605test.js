@@ -66,6 +66,7 @@ function initCrosses() {
 
 // define the function for drawing flickering crosses across the background
 function drawCrosses(ps) {
+  rectMode(CORNER);
   noStroke();
   for (let cross of crosses) {
     if (cross.state === 'fadeIn') {
