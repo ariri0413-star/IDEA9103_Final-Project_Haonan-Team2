@@ -93,8 +93,9 @@ During these visual transformations, players can also interact with the glitch e
 ChatGPT was used to assist with specific coding tasks in this project. It helped calculate the pixel grid size so that visual elements could keep the same scale across different screen sizes and scenes. It was also used to help generate mirrored pixel images, such as candles or decorative objects, so the left and right sides of the scene could match visually. In addition, ChatGPT mainly helped with position calculations for visual elements, including calculating symmetrical positions, spacing between objects, and responsive placement based on the canvas size. This helped visual elements stay aligned and balanced across different scenes.
 
 All AI-assisted code was reviewed, tested, and modified by the group members before being included in the final project. The code was adjusted to fit our visual design, scene layout, and p5.js project structure.
-
-## 5. Interaction instructions
+## 5. External references
+None. No external code libraries, tutorials, or source code were directly incorporated into this project.
+## 6. Interaction instructions
 - Click the **Play/Pause** button to start the audio.
 - Move the mouse across the screen to make a choice.
 - Hover over **Confess** to charge the holy path and enter the **Heaven ending**.
