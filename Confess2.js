@@ -299,6 +299,204 @@ function moveToward(x, y, tx, ty, speed) {
   };
 }
 
+function drawAngelHalo(x, y, w, h) {
+  push();
+
+  let haloX = x + w / 2;
+  let haloY = y + h * 0.08;
+
+  let baseW = w * 0.32;
+  let baseH = h * 0.045;
+
+  drawNoiseRing(
+    haloX,
+    haloY,
+    baseW,
+    baseH,
+    color(255, 252, 245),
+    color(255, 255, 255),
+    130,
+    4,
+    0.02
+  );
+
+  drawMiddleHaloCloud(
+    haloX,
+    haloY,
+    baseW * 1.55,
+    baseH * 1.8
+  );
+
+  drawOuterHaloCloud(
+    haloX,
+    haloY,
+    baseW * 2.2,
+    baseH * 2.6
+  );
+
+  pop();
+}
+
+function drawMiddleHaloCloud(cx, cy, w, h) {
+  noStroke();
+
+  let count = 1500;
+
+  for (let i = 0; i < count; i++) {
+    let a = random(TWO_PI);
+    let spread = pow(random(), 1.6);
+
+    let rx = w * 0.4 + spread * w * 0.35;
+    let ry = h * 0.4 + spread * h * 1.6;
+
+    let n = noise(
+      cos(a) * 2.0 + i * 0.01,
+      sin(a) * 2.0 + frameCount * 0.006
+    );
+
+    let px = cx + cos(a) * rx + map(n, 0, 1, -10, 10);
+    let py = cy + sin(a) * ry + map(n, 0, 1, -4, 4);
+
+    let alpha = map(spread, 0, 1, 120, 0);
+    let size = map(spread, 0, 1, 3, 0.5);
+
+    fill(255, 238, 180, alpha);
+    circle(px, py, size);
+  }
+}
+
+function drawOuterHaloCloud(cx, cy, w, h) {
+  noStroke();
+
+  let count = 10000;
+
+  for (let i = 0; i < count; i++) {
+    let a = random(TWO_PI);
+    let spread = pow(random(), 1.8);
+
+    let rx = w * 0.45 + spread * w * 0.75;
+    let ry = h * 0.45 + spread * h * 2.8;
+
+    let n = noise(
+      cos(a) * 2.0 + i * 0.01,
+      sin(a) * 2.0 + frameCount * 0.006
+    );
+
+    let jitterX = map(n, 0, 1, -18, 18);
+    let jitterY = map(n, 0, 1, -8, 8);
+
+    let px = cx + cos(a) * rx + jitterX;
+    let py = cy + sin(a) * ry + jitterY;
+
+    let alpha = map(spread, 0, 1, 110, 0);
+    let size = map(spread, 0, 1, 3.5, 0.4);
+
+    fill(255, 255, 245, alpha);
+    circle(px, py, size);
+  }
+}
+
+function drawOuterHaloDust(cx, cy, w, h) {
+  noStroke();
+
+  for (let i = 0; i < 600; i++) {
+    let angle = random(TWO_PI);
+    let radius = random(1.0, 1.8);
+
+    let rx = (w * 0.5) * radius;
+    let ry = (h * 0.5) * radius;
+
+    let n = noise(
+      cos(angle) * 2 + frameCount * 0.002,
+      sin(angle) * 2 + i * 0.01
+    );
+
+    let offset = map(n, 0, 1, -20, 20);
+
+    let px = cx + cos(angle) * (rx + offset);
+    let py = cy + sin(angle) * (ry + offset * 0.3);
+
+    let alpha = map(radius, 1.0, 1.8, 120, 0);
+    let size = map(radius, 1.0, 1.8, 3, 0.5);
+
+    fill(255, 255, 255, alpha);
+    circle(px, py, size);
+  }
+}
+
+function drawNoiseRing(cx, cy, ringW, ringH, mainCol, glowCol, particleCount, particleSize, speed) {
+  push();
+
+  noFill();
+
+  for (let i = 10; i > 0; i--) {
+    stroke(
+      red(glowCol),
+      green(glowCol),
+      blue(glowCol),
+      6
+    );
+    strokeWeight(i * 2);
+    ellipse(cx, cy, ringW + i * 8, ringH + i * 3);
+  }
+
+  stroke(
+    red(mainCol),
+    green(mainCol),
+    blue(mainCol),
+    210
+  );
+  strokeWeight(3);
+
+  beginShape();
+
+  for (let a = 0; a < TWO_PI; a += 0.06) {
+    let n = noise(
+      cos(a) * 1.2 + frameCount * speed,
+      sin(a) * 1.2 + frameCount * speed
+    );
+
+    let jitter = map(n, 0, 1, -6, 6);
+
+    let px = cx + cos(a) * (ringW / 2 + jitter);
+    let py = cy + sin(a) * (ringH / 2 + jitter * 0.25);
+
+    vertex(px, py);
+  }
+
+  endShape(CLOSE);
+
+  noStroke();
+
+  for (let i = 0; i < particleCount; i++) {
+    let a = map(i, 0, particleCount, 0, TWO_PI);
+
+    let n = noise(
+      cos(a) * 2 + i * 0.08,
+      sin(a) * 2 + frameCount * speed
+    );
+
+    let jitter = map(n, 0, 1, -10, 10);
+
+    let px = cx + cos(a) * (ringW / 2 + jitter);
+    let py = cy + sin(a) * (ringH / 2 + jitter * 0.25);
+
+    let alpha = map(n, 0, 1, 100, 255);
+    let s = map(n, 0, 1, particleSize * 0.4, particleSize);
+
+    fill(
+      red(mainCol),
+      green(mainCol),
+      blue(mainCol),
+      alpha
+    );
+
+    circle(px, py, s);
+  }
+
+  pop();
+}
+
 function drawConfess2() {
   background(255);
 
@@ -467,6 +665,8 @@ function drawConfess2() {
 
   let startY = height - displayH;
 
+  drawAngelHalo(startX, startY, displayW, displayH);
+
   for (
     let y = 0;
     y < displayH;
@@ -553,16 +753,5 @@ function drawConfess2() {
   Confess2Timer = 0;
   scene = "main";
   hasChosen = false;
-  }
-}
-
-
-function playPause() {
-  if (openingSong.isPlaying()) {
-    openingSong.pause();
-    playButton.html("Play");
-  } else {
-    openingSong.loop();
-    playButton.html("Pause");
   }
 }

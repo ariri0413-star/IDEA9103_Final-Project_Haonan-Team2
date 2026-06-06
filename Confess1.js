@@ -325,15 +325,7 @@ function drawConfess1() {
 }
 
 
-function playPause() {
-  if (openingSong.isPlaying()) {
-    openingSong.pause();
-    playButton.html("Play");
-  } else {
-    openingSong.loop();
-    playButton.html("Pause");
-  }
-}function initFlowLayer() {
+function initFlowLayer() {
   flowLayer = createGraphics(width, height);
   flowLayer.clear();
 

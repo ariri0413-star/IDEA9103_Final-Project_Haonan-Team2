@@ -1,5 +1,10 @@
 //opening scene: church
 
+let choiceTransition = false;
+let choiceTransitionType = ""; // "Confess" or "Deceive"
+let choiceTransitionTimer = 0;
+let choiceTransitionDuration = 60;
+
 let scene = "main";
 let hasChosen = false;
 
@@ -31,9 +36,9 @@ let holyFloatItems = [];
 // preload the music
 function preload() {
   //sound
-  openingSong = loadSound("assets/ES_House of a Hundred Rooms - Dream Cave.wav");
-  badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
-  goodSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
+  openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
+  badSong = loadSound("assets/ES_House of a Hundred Rooms - Dream Cave.wav");
+  goodSong = loadSound("assets/ES_The Smoke Clears - Wendel Scherer.wav");
   //images
   openingNun = loadImage("image/nun1.png");
   badNun = loadImage("image/nun2.png");
@@ -73,6 +78,11 @@ function setup() {
   initBloodOverlay();
 
   // Deceive2 initialize
+  pns = new perlinNoise();
+  pns.init();
+
+  initBloodMist();
+
   randomiseCrosses();
   setInterval(randomiseCrosses, 2000);
   createEyes(7);
@@ -733,19 +743,17 @@ function windowResized() {
 
   // Main scene / Confess1 / Deceive1 use crosses
   initCrosses();
-
   // Confess1 Perlin overlay
   initFlowLayer();
-
   // Confess2 wings
   initWings();
-
   // Deceive1 blood overlay
   initBloodOverlay();
 
   // Deceive2 random crosses and eyes
   randomiseCrosses();
   createEyes(7);
+  initBloodMist();
 }
 
 // Play or pause background music
@@ -774,47 +782,109 @@ function drawChoiceLayer() {
   let titleSize = constrain(width * 0.06, 32, 90);
 
   let confessX = width * 0.28;
-
   let deceiveX = width * 0.72;
-
   let optionY = height * 0.5;
 
-  updateHoverProgress(confessX, deceiveX, optionY, titleSize);
+  // 只有还没进入过渡时，才继续检测鼠标进度
+  if (!choiceTransition) {
+    updateHoverProgress(confessX, deceiveX, optionY, titleSize);
+  }
 
   drawOptionEffect(
-
     "Confess",
-
     confessX,
-
     optionY,
-
     titleSize,
-
     confessProgress,
-
     "holy"
-
   );
 
   drawOptionEffect(
-
     "Deceive",
-
     deceiveX,
-
     optionY,
-
     titleSize,
-
     deceiveProgress,
-
     "blood"
-
   );
+
+  // 如果进度条已经满了，播放全屏过渡效果
+  if (choiceTransition) {
+
+    drawChoiceTransitionEffect();
+
+    choiceTransitionTimer++;
+
+    if (choiceTransitionTimer > choiceTransitionDuration) {
+
+      choiceTransition = false;
+      choiceTransitionTimer = 0;
+
+      if (choiceTransitionType === "Confess1") {
+        Confess1Timer = 0;
+        initFlowLayer();
+        scene = "Confess1";
+      }
+
+      if (choiceTransitionType === "Deceive1") {
+        Deceive1Timer = 0;
+        scene = "Deceive1";
+      }
+
+      confessProgress = 0;
+      deceiveProgress = 0;
+    }
+  }
 
   drawPixelCursor();
+}
 
+function drawChoiceTransitionEffect() {
+  noStroke();
+  rectMode(CENTER);
+
+  let progress = choiceTransitionTimer / choiceTransitionDuration;
+
+  if (choiceTransitionType === "Confess") {
+
+    // 圣光铺满全屏
+    for (let i = 0; i < 180; i++) {
+      let px = random(width);
+      let py = random(height);
+      let s = random(4, 14) * (1 + progress);
+
+      if (random() < 0.6) {
+        fill(255, 230, 120, random(40, 130));
+      } else {
+        fill(255, 160, 210, random(30, 100));
+      }
+
+      rect(px, py, s, s);
+    }
+
+    // 中心白光
+    fill(255, 245, 210, 120 * progress);
+    ellipse(width / 2, height / 2, width * progress * 1.4, height * progress * 1.4);
+  }
+
+  if (choiceTransitionType === "Deceive") {
+
+    // 血色像素铺满全屏
+    for (let i = 0; i < 220; i++) {
+      let px = random(width);
+      let py = random(height);
+      let s = random(4, 18) * (1 + progress);
+
+      fill(255, 0, 25, random(40, 140));
+      rect(px, py, s, s);
+    }
+
+    // 红色闪屏
+    fill(120, 0, 15, 90 * progress);
+    rect(width / 2, height / 2, width, height);
+  }
+
+  rectMode(CORNER);
 }
 
 // 鼠标停留进度控制
@@ -877,10 +947,11 @@ function updateHoverProgress(confessX, deceiveX, optionY, titleSize) {
 
   hasChosen = true;
 
-  scene = "Confess1";
-
-  confessProgress = 0;
-
+  choiceTransition = true;
+  choiceTransitionType = "Confess1";
+  choiceTransitionTimer = 0;
+  
+  confessProgress = 1;
   deceiveProgress = 0;
 
   }
@@ -889,11 +960,12 @@ function updateHoverProgress(confessX, deceiveX, optionY, titleSize) {
 
   hasChosen = true;
 
-  scene = "Deceive1";
+  choiceTransition = true;
+  choiceTransitionType = "Deceive1";
+  choiceTransitionTimer = 0;
 
   confessProgress = 0;
-
-  deceiveProgress = 0;
+  deceiveProgress = 1;
 
   }
 
