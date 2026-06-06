@@ -38,7 +38,7 @@ function preload() {
   //sound
   openingSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
   badSong = loadSound("assets/ES_House of a Hundred Rooms - Dream Cave.wav");
-  goodSong = loadSound("assets/ES_The Smoke Clears - Wendel Scherer.wav");
+  goodSong = loadSound("assets/ES_Ethos - Johannes Bornlof.wav");
   //images
   openingNun = loadImage("image/nun1.png");
   badNun = loadImage("image/nun2.png");
