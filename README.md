@@ -72,13 +72,11 @@ In the heaven scene, blue and yellow light rays rotate over time by updating the
 ### 3.3. Perlin noise and randomness: Wenjun Gu (@wenjungu0109)
 The background is adorned with delicate floral patterns. While the player remains honest, the visuals employ a bright, warm color palette to cultivate a sacred and tranquil atmosphere. However, once the player chooses to "lie," the environmental tones instantly submerge into a somber combination of black and dark crimson, accompanied by a heavy "Glitch Art" effect characterized by shattering rectangular artifacts. The underlying Perlin noise transitions from a soft warm white into flowing dark red particles.Additionally, Perlin noise can simulate the dynamic movement of smoke and airflow when a candle is extinguished, while interacting with environmental parameters to generate smooth and natural visual effects, thereby enhancing the realism and immersion of the animation. This stark visual contrast intuitively manifests the collapse and distortion of the nun’s psyche, echoing the spiritual alienation brought by self-deception and immersing the player in a profound psychological horror experience.
 
-![Sketch](image/FlowerLight.png)
+![Sketch](image/perlin1.png)
+*Transition: to heaven*
 
-![Sketch](image/WallLight.png)
-
-![Sketch](image/FlowFieldLight.png)
-
-![Sketch](image/RedGlitch.png)
+![Sketch](image/perlin2.png)
+*Transition: to hell*
 
 ### 3.4. User input: Yang Zhou (@Yang-Zhou-123)
 The User Input mechanic allows players to directly influence the development of the story through keyboard and mouse interactions. 
