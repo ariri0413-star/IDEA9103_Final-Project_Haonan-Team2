@@ -486,7 +486,7 @@ function initBloodMist() {
 }
 function draw() {
   
-    background(24, 18, 35, 20);
+    background(24, 18, 35);
     drawBloodMist();
     // canvas size
     const cw = width;
@@ -829,7 +829,7 @@ function drawBloodMist() {
   mistLayer.noStroke();
 
   // 这里用透明黑擦掉旧轨迹，让它慢慢淡出
-  mistLayer.fill(0,0,0,4);
+  mistLayer.fill(24,18,35,10);
   mistLayer.rect(0, 0, width, height);
 
   let yoff = 0;

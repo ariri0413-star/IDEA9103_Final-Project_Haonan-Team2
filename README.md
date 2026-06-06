@@ -77,6 +77,8 @@ The background is adorned with delicate floral patterns. While the player remain
 
 ![Sketch](image/perlin2.png)
 *Transition: to hell*
+![Sketch](image/Bloodmist.png)
+*Blood Mist*
 
 ### 3.4. User input: Yang Zhou (@Yang-Zhou-123)
 The User Input mechanic allows players to directly influence the development of the story through keyboard and mouse interactions. 
@@ -90,7 +92,7 @@ During these visual transformations, players can also interact with the glitch e
 ![Sketch](image/userinput3.png)
 *User Option: Deceive*
 ## 4. AI acknowledgement
-ChatGPT was used to assist with specific coding tasks in this project. It helped calculate the pixel grid size so that visual elements could keep the same scale across different screen sizes and scenes. It was also used to help generate mirrored pixel images, such as candles or decorative objects, so the left and right sides of the scene could match visually. In addition, ChatGPT mainly helped with position calculations for visual elements, including calculating symmetrical positions, spacing between objects, and responsive placement based on the canvas size. This helped visual elements stay aligned and balanced across different scenes.
+ChatGPT and Claude was used to assist with specific coding tasks in this project. It helped calculate the pixel grid size so that visual elements could keep the same scale across different screen sizes and scenes. It was also used to help generate mirrored pixel images, such as candles or decorative objects, so the left and right sides of the scene could match visually. In addition, AI mainly helped with position calculations for visual elements, including calculating symmetrical positions, spacing between objects, and responsive placement based on the canvas size. This helped visual elements stay aligned and balanced across different scenes.
 
 All AI-assisted code was reviewed, tested, and modified by the group members before being included in the final project. The code was adjusted to fit our visual design, scene layout, and p5.js project structure.
 ## 5. External references
