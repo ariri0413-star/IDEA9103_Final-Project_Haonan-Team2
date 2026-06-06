@@ -12,7 +12,7 @@ This project contains horror elements, glitch visual effects, flashing imagery, 
 
 Our team created an original pixel-art interactive artwork inspired by Gothic stained glass, and psychological narrative games such as Needy Girl Overdose and The Confession, and the horror aesthetics of The Creepy Syndrome. Needy Girl Overdose inspired the use of contrasting emotional states. Its strong pixel-art and glitch aesthetic also influenced our overall visual style. Meanwhile, The Creepy Syndrome influenced the project’s horror atmosphere, and The Confession inspired its exploration of confession and the consequences of one's choices.
 
-Set within a confessional, the player chooses whether to tell the truth or tell a lie to a nun. This decision determines the path of the story. If the player chooses to deceive the nun, the world will gradually begin to deteriorate, descending into a hellish place filled with horror, distortion, and unease. In contrast, choosing to confess and tell the truth will make the world become a heaven, allowing the soul to find peace and redemption. Through the combination of pixel-art visuals, religious imagery, and interactive storytelling, our work explores themes of confession, deception, and redemption. 
+Set within a confessional, the player chooses whether to tell the truth or tell a lie to a nun. This decision determines the path of the story. If the player chooses to deceive the nun, the world will gradually begin to deteriorate, descending into a hellish place filled with horror, distortion, and unease. In contrast, choosing to confess and tell the truth will make the world become a heaven, allowing the soul to find peace and redemption. Through the combination of pixel-art visuals, religious imagery, and interactive storytelling, our work explores themes of confession, deception, and redemption.
 
 ![Sketch](image/TheConfession.png)
 *The Confession*
@@ -25,7 +25,6 @@ Set within a confessional, the player chooses whether to tell the truth or tell 
 
 ![Sketch](image/ChurchStainedGlass.jpg)
 *Church Stained Glass*
-
 
 ## 2. Techniques
 
