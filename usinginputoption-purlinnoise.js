@@ -24,8 +24,8 @@ let perlinCols, perlinRows;
 let zoff = 0;
 let zstep = 0.3;
 
-let psNums = 3000;
-let maxSpeed = 8;
+let psNums = 6000;
+let maxSpeed = 12;
 
 // ─────────────────────────────────────────────
 // stained glass
@@ -569,7 +569,7 @@ function drawPerlinOverlay() {
 
       let angle = noise(xoff, yoff, zoff) * TWO_PI * 4;
       let v = p5.Vector.fromAngle(angle);
-      v.setMag(0.3);
+      v.setMag(0.8);
 
       flowField[index] = v;
 
@@ -588,7 +588,7 @@ function drawPerlinOverlay() {
     p.show();
   }
 
-  overlayAlpha = min(overlayAlpha + 3, 255);
+  overlayAlpha = min(overlayAlpha + 8, 255);
 
   tint(255, overlayAlpha);
   image(flowLayer, 0, 0);
@@ -634,8 +634,8 @@ class FlowParticle{
     let g = lerp(220, 230, t);
     let b = lerp(230, 180, t);
 
-    flowLayer.stroke(r, g, b, 60);
-    flowLayer.strokeWeight(5);
+    flowLayer.stroke(r, g, b, 100);
+    flowLayer.strokeWeight(7);
 
     flowLayer.line(
       this.pos.x,

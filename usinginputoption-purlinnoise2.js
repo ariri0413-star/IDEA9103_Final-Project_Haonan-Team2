@@ -22,10 +22,10 @@ let bloodGridSize = 10;
 let flowCols, flowRows;
 
 let bloodZoff = 0;
-let bloodZstep = 0.02;
+let bloodZstep = 0.3;
 
-let bloodParticleNums = 2200;
-let bloodMaxSpeed = 4;
+let bloodParticleNums = 6000;
+let bloodMaxSpeed = 12;
 let bloodOverlayAlpha = 0;
 // preload the music
 function preload() {
@@ -679,7 +679,7 @@ function drawBloodOverlay() {
         0.55;
 
       let v = p5.Vector.fromAngle(angle);
-      v.setMag(0.18);
+      v.setMag(0.8);
 
       bloodFlowField[index] = v;
 
@@ -698,7 +698,7 @@ function drawBloodOverlay() {
     p.show();
   }
 
-  bloodOverlayAlpha = min(bloodOverlayAlpha + 3, 255);
+  bloodOverlayAlpha = min(bloodOverlayAlpha + 8, 255);
 
   tint(255, bloodOverlayAlpha);
   image(bloodLayer, 0, 0);
