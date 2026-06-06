@@ -19,6 +19,8 @@ let fft;
 let playButton;
 let badNun;
 
+let sceneTransitionAlpha = 255;
+
 function preload() {
   openingSong = loadSound("assets/ES_House of a Hundred Rooms - Dream Cave.wav");
   badSong = loadSound("assets/ES_The Haunted - Luella Gren.wav");
@@ -546,6 +548,31 @@ function draw() {
       );
 
     }
+
+  }
+  // hell scene transition overlay
+
+  if (sceneTransitionAlpha > 0) {
+
+    noStroke();
+
+    rectMode(CORNER);
+
+    fill(
+      121,
+      0,
+      15,
+      sceneTransitionAlpha
+    );
+
+    rect(
+      0,
+      0,
+      width,
+      height
+    );
+
+    sceneTransitionAlpha -= 3; // 1.5 seconds fade out
 
   }
 }

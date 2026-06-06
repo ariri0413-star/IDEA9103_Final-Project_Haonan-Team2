@@ -1,5 +1,3 @@
-//hell
-
 let openingSong;
 let badSong;
 let goodSong;
@@ -18,6 +16,21 @@ let analyser;
 let fft;
 let playButton;
 let badNun;
+
+let sceneTransitionAlpha = 255;
+
+// invert flash effect variables
+let invertFlashActive = false;
+let invertFlashTimer = 0;
+let invertFlashDuration = 8; // frames to stay inverted
+
+// invert flash mode: 0 = single hold, 1 = strobe flicker
+let invertFlashMode = 0;
+let invertStrobeCount = 0;
+let invertStrobeTotal = 0;
+let invertStrobeOnFrames = 0;
+let invertStrobeOffFrames = 0;
+let invertStrobePhase = 0; // 0 = on, 1 = off
 
 function preload() {
   openingSong = loadSound("assets/ES_House of a Hundred Rooms - Dream Cave.wav");
@@ -45,6 +58,31 @@ function setup() {
   playButton = createButton("Play/Pause");
   playButton.position(width * 0.02, height * 0.03);
   playButton.mousePressed(playPause);
+
+  // trigger invert flash every 4–8 seconds randomly
+  // randomly picks between a single hold or a strobe flicker effect
+  function triggerInvertFlash() {
+    invertFlashMode = floor(random(2));
+
+    if (invertFlashMode === 0) {
+      // single hold: lasts between 6 and 20 frames
+      invertFlashActive = true;
+      invertFlashTimer = floor(random(6, 21));
+    } else {
+      // strobe: flickers 2 to 5 times
+      invertFlashActive = true;
+      invertStrobeTotal = floor(random(2, 6));
+      invertStrobeCount = 0;
+      invertStrobeOnFrames = floor(random(3, 8));
+      invertStrobeOffFrames = floor(random(2, 6));
+      invertStrobePhase = 0;
+      invertFlashTimer = invertStrobeOnFrames;
+    }
+
+    setTimeout(triggerInvertFlash, random(4000, 8000));
+  }
+
+  setTimeout(triggerInvertFlash, random(4000, 8000));
 }
 
 // ——————————————————————————————————————————————
@@ -547,6 +585,100 @@ function draw() {
 
     }
 
+  }
+  // hell scene transition overlay
+
+  if (sceneTransitionAlpha > 0) {
+
+    noStroke();
+
+    rectMode(CORNER);
+
+    fill(
+      121,
+      0,
+      15,
+      sceneTransitionAlpha
+    );
+
+    rect(
+      0,
+      0,
+      width,
+      height
+    );
+
+    sceneTransitionAlpha -= 3; // 1.5 seconds fade out
+
+  }
+
+  // ——————————————————————————————————————————
+  // screen invert flash effect
+  // draws a white difference-blend overlay to simulate colour inversion
+
+  if (invertFlashActive) {
+
+    if (invertFlashMode === 0) {
+
+      // single hold mode: stay inverted for invertFlashTimer frames
+      drawingContext.save();
+
+      // DIFFERENCE blend: white overlay inverts every pixel beneath it
+      drawingContext.globalCompositeOperation = "difference";
+
+      noStroke();
+      fill(255, 255, 255, 255);
+
+      rect(0, 0, width, height);
+
+      drawingContext.restore();
+
+      invertFlashTimer--;
+
+      if (invertFlashTimer <= 0) {
+        invertFlashActive = false;
+      }
+
+    } else {
+
+      // strobe mode: flicker on and off multiple times
+      if (invertStrobePhase === 0) {
+
+        // on phase: draw invert overlay
+        drawingContext.save();
+
+        // DIFFERENCE blend: white overlay inverts every pixel beneath it
+        drawingContext.globalCompositeOperation = "difference";
+
+        noStroke();
+        fill(255, 255, 255, 255);
+
+        rect(0, 0, width, height);
+
+        drawingContext.restore();
+
+      }
+
+      invertFlashTimer--;
+
+      if (invertFlashTimer <= 0) {
+
+        if (invertStrobePhase === 0) {
+          // switch to off phase
+          invertStrobePhase = 1;
+          invertFlashTimer = invertStrobeOffFrames;
+          invertStrobeCount++;
+        } else {
+          // switch back to on phase, or end if done
+          if (invertStrobeCount >= invertStrobeTotal) {
+            invertFlashActive = false;
+          } else {
+            invertStrobePhase = 0;
+            invertFlashTimer = invertStrobeOnFrames;
+          }
+        }
+      }
+    }
   }
 }
 
