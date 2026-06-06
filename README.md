@@ -10,18 +10,22 @@ This project contains horror elements, glitch visual effects, flashing imagery, 
 
 ## 1. Inspiration
 
- Our team will create an original pixel-art interactive artwork inspired by the visual atmosphere of The Starry Night, as well as psychological narrative games such as Needy Streamer Overload and Rusty Lake. 
+Our team created an original pixel-art interactive artwork inspired by Gothic stained glass, and psychological narrative games such as Needy Girl Overdose and The Confession, and the horror aesthetics of The Creepy Syndrome. Needy Girl Overdose inspired the use of contrasting emotional states. Its strong pixel-art and glitch aesthetic also influenced our overall visual style. Meanwhile, The Creepy Syndrome influenced the project’s horror atmosphere, and The Confession inspired its exploration of confession and the consequences of one's choices.
 
- The protagonist is a nun who repeatedly faces two choices throughout the story: confronting the truth or choosing to lie. Each decision changes the visual and emotional state of the world. When she chooses to face the truth, the environment gradually becomes warmer and brighter. When she chooses to lie, the visuals begin to glitch, distort, and feel unstable. Through branching narratives and interactive mechanics, we aim to explore themes of escapism, self-deception, and emotional redemption.
+Set within a confessional, the player chooses whether to tell the truth or tell a lie to a nun. This decision determines the path of the story. If the player chooses to deceive the nun, the world will gradually begin to deteriorate, descending into a hellish place filled with horror, distortion, and unease. In contrast, choosing to confess and tell the truth will make the world become a heaven, allowing the soul to find peace and redemption. Through the combination of pixel-art visuals, religious imagery, and interactive storytelling, our work explores themes of confession, deception, and redemption. 
 
-![Sketch](image/NeedyStreamerOverload.jpg)
-*Needy Streamer Overload*
+![Sketch](image/TheConfession.png)
+*The Confession*
 
-![Sketch](image/RustyLake.jpg)
-*Rusty Lake*
+![Sketch](image/NeedyGirlOverdose.png)
+*Needy Girl Overdose*
 
-![Sketch](image/TheStarryNight.png)
-*The Starry Night*
+![Sketch](image/TheCreepySyndrome.png)
+*The Creepy Syndrome*
+
+![Sketch](image/ChurchStainedGlass.jpg)
+*Church Stained Glass*
+
 
 ## 2. Techniques
 
@@ -45,9 +49,9 @@ The time-based mechanic in our project is used to make the picture feel alive an
 
 In the opening church scene, floating crosses gradually fade in, remain visible for a short period, fade out, and then reappear at new random positions. In the top-right corner of the window, a spider repeatedly moves up and down on its thread. These animations enhance the church's atmosphere, making the environment feel more immersive and visually engaging.
 
-In the hell scene, each pupil randomly shifts to a new position every 40 frames, creating the effect that the eyes are constantly looking around. This makes the hell scene feel more unsettling and alive, as if the environment is watching the user. 
+In the hell scene, randomly positioned, sized, and coloured eyes are generated across the screen, and their pupils randomly shifts to a new position every 40 frames, creating the effect that the eyes are constantly looking around. This makes the hell scene feel more unsettling and alive, as if the environment is watching the user.
 
-In the heaven scene, blue and yellow light rays rotate over time by updating the angle value every frame. And wings continuously fly from one side of the window to the other. These animations build a sense of spiritual elevation, creating a contrast with the darker scene of the project. 
+In the heaven scene, blue and yellow light rays rotate over time by updating the angle value every frame. And wings with random starting positions continuously fly from one side of the window to the other. These animations build a sense of spiritual elevation, creating a contrast with the darker scene of the project. 
 
 ![Sketch](image/FloatingCrosses+Spider.png)
 *Floating Crosses and Moving Spider*
