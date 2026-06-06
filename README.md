@@ -79,6 +79,8 @@ The background is adorned with delicate floral patterns. While the player remain
 *Transition: to hell*
 ![Sketch](image/Bloodmist.png)
 *Blood Mist*
+![Sketch](image/Anglehalo.png)
+*Angle Halo*
 
 ### 3.4. User input: Yang Zhou (@Yang-Zhou-123)
 The User Input mechanic allows players to directly influence the development of the story through keyboard and mouse interactions. 
