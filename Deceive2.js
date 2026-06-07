@@ -594,9 +594,10 @@ function drawDeceive2() {
     );
   }
  }
-
+  // ——————————————————————————————————————————————
+ 
   // nun image
-
+  // render the nun image using a custom pixel grid
   let nunPixelSize = pixSize * 0.6;
 
   let displayH = height * 0.88;
@@ -611,6 +612,7 @@ function drawDeceive2() {
 
   }
 
+  // change size or keep
   displayW *= 1.1;
 
   displayH *= 1.1;
@@ -619,6 +621,7 @@ function drawDeceive2() {
 
   let startY = height - displayH;
 
+  // sample image pixels and redraw them as pixel blocks
   for (let y = 0; y < displayH; y += nunPixelSize) {
 
     for (let x = 0; x < displayW; x += nunPixelSize) {

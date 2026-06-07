@@ -214,6 +214,7 @@ function calcPixSize() {
   return min(winW / REF_W, winH / REF_H);
 }
 
+// draw a pixel-art heart, with optional horizontal mirroring
 function drawHeart(x, y, ps, mirror) {
   noStroke();
 
@@ -222,6 +223,7 @@ function drawHeart(x, y, ps, mirror) {
 
       let col = c;
 
+      // reverse the column index to create a mirrored heart
       if (mirror) {
         col = HW - 1 - c;
       }
@@ -237,6 +239,7 @@ function drawHeart(x, y, ps, mirror) {
   }
 }
 
+// draw a pixel-art cross, with optional horizontal mirroring
 function drawGoodCross(x, y, ps, mirror) {
   noStroke();
 
@@ -245,6 +248,7 @@ function drawGoodCross(x, y, ps, mirror) {
 
       let col = c;
 
+      // reverse the column index to create a mirrored cross
       if (mirror) {
         col = GCW - 1 - c;
       }
@@ -260,6 +264,7 @@ function drawGoodCross(x, y, ps, mirror) {
   }
 }
 
+// draw a pixel-art angel wing
 function drawWing(x, y, ps) {
   const x0 = floor(x);
   const y0 = floor(y);
@@ -299,6 +304,7 @@ function moveToward(x, y, tx, ty, speed) {
   };
 }
 
+// draw the layered angel halo effect
 function drawAngelHalo(x, y, w, h) {
   push();
 
@@ -308,6 +314,7 @@ function drawAngelHalo(x, y, w, h) {
   let baseW = w * 0.32;
   let baseH = h * 0.045;
 
+  // combine a noise ring with multiple glow layers
   drawNoiseRing(
     haloX,
     haloY,
@@ -337,6 +344,9 @@ function drawAngelHalo(x, y, w, h) {
   pop();
 }
 
+// draw the middle glow layer of the angel halo
+// Claude helped with the mathematical formulas 
+// used to distribute particles and create a softer halo shape in this visual effect.
 function drawMiddleHaloCloud(cx, cy, w, h) {
   noStroke();
 
@@ -349,6 +359,7 @@ function drawMiddleHaloCloud(cx, cy, w, h) {
     let rx = w * 0.4 + spread * w * 0.35;
     let ry = h * 0.4 + spread * h * 1.6;
 
+    // use Perlin noise to create a soft, organic cloud shape
     let n = noise(
       cos(a) * 2.0 + i * 0.01,
       sin(a) * 2.0 + frameCount * 0.006
@@ -365,6 +376,7 @@ function drawMiddleHaloCloud(cx, cy, w, h) {
   }
 }
 
+// draw the outer glow layer of the angel halo
 function drawOuterHaloCloud(cx, cy, w, h) {
   noStroke();
 
@@ -377,6 +389,7 @@ function drawOuterHaloCloud(cx, cy, w, h) {
     let rx = w * 0.45 + spread * w * 0.75;
     let ry = h * 0.45 + spread * h * 2.8;
 
+    // use Perlin noise to create a softer and less uniform cloud shape
     let n = noise(
       cos(a) * 2.0 + i * 0.01,
       sin(a) * 2.0 + frameCount * 0.006
@@ -396,6 +409,7 @@ function drawOuterHaloCloud(cx, cy, w, h) {
   }
 }
 
+// draw floating dust particles around the outer halo
 function drawOuterHaloDust(cx, cy, w, h) {
   noStroke();
 
@@ -406,6 +420,7 @@ function drawOuterHaloDust(cx, cy, w, h) {
     let rx = (w * 0.5) * radius;
     let ry = (h * 0.5) * radius;
 
+    // use Perlin noise to add subtle movement and irregular spacing
     let n = noise(
       cos(angle) * 2 + frameCount * 0.002,
       sin(angle) * 2 + i * 0.01
@@ -424,11 +439,13 @@ function drawOuterHaloDust(cx, cy, w, h) {
   }
 }
 
+// draw a Perlin-noise ring with glow and moving particles
 function drawNoiseRing(cx, cy, ringW, ringH, mainCol, glowCol, particleCount, particleSize, speed) {
   push();
 
   noFill();
 
+  // draw several transparent ellipses to create a soft glow
   for (let i = 10; i > 0; i--) {
     stroke(
       red(glowCol),
@@ -448,6 +465,7 @@ function drawNoiseRing(cx, cy, ringW, ringH, mainCol, glowCol, particleCount, pa
   );
   strokeWeight(3);
 
+  // use Perlin noise to make the ring edge slightly uneven
   beginShape();
 
   for (let a = 0; a < TWO_PI; a += 0.06) {
@@ -468,6 +486,7 @@ function drawNoiseRing(cx, cy, ringW, ringH, mainCol, glowCol, particleCount, pa
 
   noStroke();
 
+  // place glowing particles around the ring
   for (let i = 0; i < particleCount; i++) {
     let a = map(i, 0, particleCount, 0, TWO_PI);
 
@@ -639,7 +658,7 @@ function drawConfess2() {
 
   // ——————————————————————————————————————————————————
   // nun image
-
+  // render the nun image using a custom pixel grid
   let nunPixelSize = ps * 0.6;
 
   let displayH = height * 0.88;
@@ -666,7 +685,7 @@ function drawConfess2() {
   let startY = height - displayH;
 
   drawAngelHalo(startX, startY, displayW, displayH);
-
+  // sample image pixels and redraw them as pixel blocks
   for (
     let y = 0;
     y < displayH;
