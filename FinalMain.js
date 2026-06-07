@@ -497,7 +497,7 @@ function drawSpider(ps, cw, offsetY) {
 
 // ─────────────────────────────────────────────
 
-// draw!! :P
+// draw!! 
 function drawMainScene() {
 
   // Control different jump strengths for layered flame motion
@@ -543,7 +543,7 @@ function drawMainScene() {
   // vertical position of the candles
   const candleBaseY = cy + actualH / 2 + pixSize * 5;
 
- // left candle group x position
+    // left candle group x position
     let leftCandleX = marginX + cellW * 0.131;
 
     // right candle group x position

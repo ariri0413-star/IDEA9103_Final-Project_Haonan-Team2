@@ -24,7 +24,7 @@ let maxSpeed = 12;
 
 // ─────────────────────────────────────────────
 
-
+// generate random cross positions once on load
 function initCrosses() {
   crosses = [];
   const count = 18;
@@ -35,13 +35,14 @@ function initCrosses() {
       y: random(height),
       alpha: 0,
       state: 'fadeIn',
-      holdTimer: floor(random(40, 120)),
+      holdTimer: floor(random(40, 120)), // frames to stay fully visible
       holdAge: 0,
       fadeSpeed: random(3, 8),
     });
   }
 }
 
+// define the function for drawing flickering crosses across the background
 function drawCrosses(ps) {
   noStroke();
 
@@ -83,6 +84,13 @@ function drawCrosses(ps) {
   }
 }
 
+// define the function for drawing the candles with optional horizontal mirroring
+
+// cx: the centre x-position of the candle group
+// baseY: the bottom y-position of the candle base
+// ps: the size of each pixel grid
+// mirror: whether to flip the group horizontally
+
 function drawCandleGroup(cx, baseY, ps, mirror) {
   const x0 = floor(cx - (CW / 2) * ps);
   const y0 = floor(baseY - CH * ps);
@@ -102,32 +110,45 @@ function drawCandleGroup(cx, baseY, ps, mirror) {
   }
 }
 
+// ─────────────────────────────────────────────
+// draw animated candle sparks
 function drawSpark(cx, baseY, ps, candleCol, bottomOffset, smallJump, bigJump, mirror) {
+  // calculate candle group left edge
   let x0 = floor(cx - (CW / 2) * ps);
+  // choose spark column & flip spark position for mirrored candles
   let col = mirror ? CW - 1 - candleCol : candleCol;
+  // final x position
   let x = x0 + col * ps;
+  // the bottom pixel of flame touches the top of the candle
   let bottomY = baseY - bottomOffset * ps;
-
+  // lower two-pixel flame, smaller movement
   rect(x, bottomY - smallJump, ps, ps);
   rect(x, bottomY - ps - smallJump, ps, ps);
+  // top single-pixel spark, bigger movement
   rect(x, bottomY - 3 * ps - bigJump, ps, ps);
 }
+// ——————————————————————————————————————————————————
+
+// draw pixel style light circle behind each candle flame
 
 function drawHalo(cx, baseY, ps, candleCol, bottomOffset, haloSize, mirror) {
+  // calculate candle group left edge
   let x0 = floor(cx - (CW / 2) * ps);
+  // choose candle column & flip position for mirrored candles
   let col = mirror ? CW - 1 - candleCol : candleCol;
-
+  // centre position of the halo
   let centerX = floor(x0 + col * ps + ps / 2);
   let centerY = floor(baseY - bottomOffset * ps - ps * 1.5);
-
+  // halo block size
   let block = ps;
 
   noStroke();
-
+  // draw pixel circle
   for (let y = -5; y <= 5; y++) {
     for (let x = -5; x <= 5; x++) {
+      // distance from centre
       let d = sqrt(x * x + y * y);
-
+      // glow
       if (d < haloSize * 0.55) {
         fill(252, 223, 37, 45);
         rect(centerX + x * block, centerY + y * block, block, block);
@@ -136,6 +157,7 @@ function drawHalo(cx, baseY, ps, candleCol, bottomOffset, haloSize, mirror) {
   }
 }
 
+// define the function for drawing the spiderweb
 function drawWeb(ps) {
   noStroke();
 
@@ -151,6 +173,7 @@ function drawWeb(ps) {
   }
 }
 
+// define the function for drawing the spider
 function drawSpider(ps, cw, offsetY) {
   const x0 = cw - SW * ps;
 
@@ -169,6 +192,7 @@ function drawSpider(ps, cw, offsetY) {
 }
 
 function drawConfess1() {
+  // Control different jump strengths for layered flame motion
   let rms = analyser.getLevel();
   let smallJump = rms * 80;
   let bigJump = rms * 160;
@@ -191,6 +215,7 @@ function drawConfess1() {
   const actualH = pixSize * PH;
   const cy = marginY + availH / 2;
 
+  // draw multiple stained glass church windows
   for (let col = 0; col < cols; col++) {
     const cx = marginX + col * cellW + cellW / 2;
     const startX = floor(cx - actualW / 2);
@@ -215,33 +240,45 @@ function drawConfess1() {
       }
     }
   }
-
+  // vertical position of the candles
   const candleBaseY = cy + actualH / 2 + pixSize * 5;
-
+  // left candle group x position
   let leftCandleX = marginX + cellW * 0.131;
+  // right candle group x position
   let rightCandleX = marginX + cellW * 2.869;
-
+  // halo size reacts to music volume
   let haloSize = 4.2 + rms * 30;
-
+  // draw halos 
   drawHalo(leftCandleX, candleBaseY, pixSize, 4.5, 18, haloSize, false);
   drawHalo(leftCandleX, candleBaseY, pixSize, 10.5, 17, haloSize * 0.8, false);
 
   drawHalo(rightCandleX, candleBaseY, pixSize, 5.5, 18, haloSize, true);
   drawHalo(rightCandleX, candleBaseY, pixSize, 11.5, 17, haloSize * 0.8, true);
-
+  // draw left candle group
   drawCandleGroup(leftCandleX, candleBaseY, pixSize, false);
+  // draw right candle group
   drawCandleGroup(rightCandleX, candleBaseY, pixSize, true);
 
+  // ————————————sparks————————————————————
+  // spark colour
   fill(252, 223, 37);
-
+  // LEFT SIDE
+  // tall candle spark
   drawSpark(leftCandleX, candleBaseY, pixSize, 5, 18, smallJump, bigJump, false);
+  // short candle spark
   drawSpark(leftCandleX, candleBaseY, pixSize, 11, 16, smallJump, bigJump, false);
-
+  // RIGHT SIDE
+  // tall candle spark
   drawSpark(rightCandleX, candleBaseY, pixSize, 5, 18, smallJump, bigJump, true);
+  // short candle spark
   drawSpark(rightCandleX, candleBaseY, pixSize, 11, 16, smallJump, bigJump, true);
+  
+  // ————————————————————————————————————————————————————
 
+  // draw spiderweb
   drawWeb(pixSize);
-
+  // ── spider animation ──
+  // animate the spider thread extending and retracting, then calculate the spider’s position based on the thread length
   const maxThread = 18;
   const cycleDur = 180;
   const halfCycle = cycleDur / 2;
@@ -256,7 +293,7 @@ function drawConfess1() {
   const spiderThreadX = cw - floor(SW / 2) * pixSize - pixSize;
   const threadTopY = 0;
   const spiderOffsetY = threadLenInt * pixSize;
-
+  // draw the spider thread
   noStroke();
   fill(220, 220, 220);
 
@@ -268,9 +305,14 @@ function drawConfess1() {
       pixSize + 0.5
     );
   }
-
+  // draw the spider
   drawSpider(pixSize, cw, spiderOffsetY);
+  // draw flickering crosses on the background
   drawCrosses(pixSize);
+
+  // ─────────────────────────────
+
+  // nun image
 
   let nunPixelSize = pixSize * 0.6;
 
@@ -282,9 +324,10 @@ function drawConfess1() {
     displayH = displayW * (openingNun.height / openingNun.width);
   }
 
+  // change size or keep
   displayW *= 1.1;
   displayH *= 1.1;
-
+  // center position
   let startX = width / 2 - displayW / 2;
   let startY = height - displayH;
 
