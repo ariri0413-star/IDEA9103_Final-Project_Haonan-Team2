@@ -74,9 +74,6 @@ The background is adorned with delicate floral patterns. While the player remain
 
 ![Sketch](image/perlin1.png)
 *Transition: to heaven*
-
-![Sketch](image/perlin2.png)
-*Transition: to hell*
 ![Sketch](image/Bloodmist.png)
 *Blood Mist*
 ![Sketch](image/Anglehalo.png)
