@@ -91,9 +91,11 @@ As the sword charges, the environment begins to react to the player’s choice. 
 ![Sketch](image/userinput3.png)
 *User Option: Deceive*
 ## 4. AI acknowledgement
-ChatGPT and Claude was used to assist with specific coding tasks in this project. It helped calculate the pixel grid size so that visual elements could keep the same scale across different screen sizes and scenes. It was also used to help generate mirrored pixel images, such as candles or decorative objects, so the left and right sides of the scene could match visually. In addition, AI mainly helped with position calculations for visual elements, including calculating symmetrical positions, spacing between objects, and responsive placement based on the canvas size. This helped visual elements stay aligned and balanced across different scenes.
+ChatGPT and Claude were used to assist with specific coding tasks during this project. AI support was mainly used for mathematical calculations, responsive layout formulas, and small programming suggestions within p5.js.
 
-All AI-assisted code was reviewed, tested, and modified by the group members before being included in the final project. The code was adjusted to fit our visual design, scene layout, and p5.js project structure.
+This included calculating pixel grid sizes so that visual elements could maintain a consistent scale across different screen sizes, generating mirrored pixel-art structures, and calculating symmetrical positions, spacing, and responsive placement of objects on the canvas. AI was also used to suggest formulas for some visual effects, such as wave-like motion. AI also provided examples of p5.js functions and loop structures.
+
+All AI-assisted code was reviewed, tested, modified, and integrated by the group members before inclusion in the final project. The final implementation, visual design, scene composition, interaction design, and creative decisions were developed and refined by the project team.
 ## 5. External references
 - The Coding Train. Flow Fields and Perlin Noise tutorials:
   https://thecodingtrain.com/challenges/24-perlin-noise-flow-field
