@@ -30,9 +30,10 @@ let pauseButton;
 
 // restart button
 let restartButton;
-
+// to track if music has started for proper play/pause functionality
 let musicStarted = false;
 
+// images
 let openingNun;
 let goodNun;
 let badNun;
@@ -60,10 +61,10 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
+  // set the frame rate to 30 FPS
   frameRate(30);
   noSmooth();
-
+  // load pixel data for the nun images so we can do pixel-level manipulation later
   openingNun.loadPixels();
   goodNun.loadPixels();
   badNun.loadPixels();
@@ -89,16 +90,16 @@ function setup() {
   // Deceive2 initialize
   pns = new perlinNoise();
   pns.init();
-
+  // initialize bad ending
   initBloodMist();
-
   randomiseCrosses();
   setInterval(randomiseCrosses, 2000);
   createEyes(7);
 
+  // amplitude analyser for music-reactive elements
   analyser = new p5.Amplitude();
   analyser.setInput(openingSong);
-
+  // fft setting for bad ending
   fft = new p5.FFT();
   fft.setInput(badSong);
 
@@ -109,7 +110,7 @@ function setup() {
   buttonBar.style("gap", "8px");
   buttonBar.style("align-items", "center");
   buttonBar.style("cursor", "none");
-
+  // play/pause button
   playButton = createButton("Play");
   playButton.parent(buttonBar);
   playButton.mousePressed(playPause);
@@ -121,7 +122,7 @@ function setup() {
   restartButton.mousePressed(resetGame);
   restartButton.style("cursor", "none");
   restartButton.hide();
-
+  // randomly trigger the screen invert effect every 4-8 seconds to add visual interest
   setTimeout(triggerInvertFlash, random(4000, 8000));
 
 }
@@ -891,7 +892,7 @@ function drawChoiceLayer() {
   let deceiveX = width * 0.72;
   let optionY = height * 0.5;
 
-  // 只有还没进入过渡时，才继续检测鼠标进度
+  // only check hover progress before the transition starts
   if (!choiceTransition) {
     updateHoverProgress(confessX, deceiveX, optionY, titleSize);
   }
@@ -914,7 +915,7 @@ function drawChoiceLayer() {
     "blood"
   );
 
-  // 如果进度条已经满了，播放全屏过渡效果
+  // trigger the full-screen transition when the charge bar is full
   if (choiceTransition) {
 
     drawChoiceTransitionEffect();
@@ -953,7 +954,7 @@ function drawChoiceTransitionEffect() {
 
   if (choiceTransitionType === "Confess") {
 
-    // 圣光铺满全屏
+    // expand holy light across the entire screen
     for (let i = 0; i < 180; i++) {
       let px = random(width);
       let py = random(height);
@@ -968,14 +969,14 @@ function drawChoiceTransitionEffect() {
       rect(px, py, s, s);
     }
 
-    // 中心白光
+    // central white glow
     fill(255, 245, 210, 120 * progress);
     ellipse(width / 2, height / 2, width * progress * 1.4, height * progress * 1.4);
   }
 
   if (choiceTransitionType === "Deceive") {
 
-    // 血色像素铺满全屏
+    // blood-red pixels fill the entire screen
     for (let i = 0; i < 220; i++) {
       let px = random(width);
       let py = random(height);
@@ -985,7 +986,7 @@ function drawChoiceTransitionEffect() {
       rect(px, py, s, s);
     }
 
-    // 红色闪屏
+    // red flah
     fill(120, 0, 15, 90 * progress);
     rect(width / 2, height / 2, width, height);
   }
@@ -993,7 +994,7 @@ function drawChoiceTransitionEffect() {
   rectMode(CORNER);
 }
 
-// 鼠标停留进度控制
+// control hover charge progress
 
 function updateHoverProgress(confessX, deceiveX, optionY, titleSize) {
 
@@ -1093,7 +1094,7 @@ function drawOptionEffect(label, x, y, size, progress, type) {
 
 }
 
-// 文字内部进度条效果
+// text charge fill effect
 
 function drawOptionTextFill(label, x, y, size, progress, type) {
 
@@ -1169,7 +1170,7 @@ function drawOptionTextFill(label, x, y, size, progress, type) {
 
 }
 
-// Confess：充能时文字附近出现圣光，满了之后全屏漂浮小元素
+// Confess: show holy light near the text while charging, then float small elements across the screen when fully charged
 
 function drawHolyHoverEffect(x, y, size, progress) {
 
@@ -1231,7 +1232,7 @@ function drawHolyHoverEffect(x, y, size, progress) {
 
 }
 
-// Deceive：红色像素扩散
+// Deceive: spread red pixels
 
 function drawBloodHoverEffect(x, y, size, progress) {
 
@@ -1315,7 +1316,7 @@ function drawBloodHoverEffect(x, y, size, progress) {
 
 }
 
-// 初始化 Confess 满格后的漂浮元素
+// initialise floating elements after Confess is fully charged
 
 function initHolyFloatItems() {
 
@@ -1349,7 +1350,7 @@ function initHolyFloatItems() {
 
 }
 
-// Confess 满格后的漂浮元素
+// floating elements after Confess is fully charged
 
 function drawHolyFloatingItems() {
 
@@ -1465,7 +1466,7 @@ function drawHolySmallSymbol(type, x, y, s) {
 
 }
 
-// 像素剑鼠标
+// pixel sword cursor
 
 function drawPixelCursor() {
 
