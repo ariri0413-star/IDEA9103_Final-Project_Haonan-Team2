@@ -14,6 +14,7 @@ let overlayAlpha = 0;
 let gridSize = 10;
 let perlinCols, perlinRows;
 
+// zoff changes over time to animate the Perlin noise field
 let zoff = 0;
 let zstep = 0.3;
 
@@ -203,6 +204,7 @@ function drawConfess1() {
 
   background(12, 10, 22);
   // calculate a responsive pixel size based on the available window space
+  // Claude helped with the formula
   const marginX = cw * 0.03;
   const marginY = ch * 0.04;
   const availW = cw - marginX * 2;
@@ -370,7 +372,7 @@ function drawConfess1() {
   }
 }
 
-
+// initialise the Perlin noise overlay and particle system
 function initFlowLayer() {
   flowLayer = createGraphics(width, height);
   flowLayer.clear();
@@ -381,6 +383,7 @@ function initFlowLayer() {
   particles = [];
   flowField = [];
 
+  // create the particles used by the flow field animation
   for (let i = 0; i < psNums; i++) {
     particles.push(new FlowParticle()); 
   }
@@ -388,6 +391,7 @@ function initFlowLayer() {
   overlayAlpha = 0;
 }
 
+// update the Perlin noise flow field and animate the particles
 function drawPerlinOverlay() {
   let yoff = 0;
 
@@ -397,6 +401,7 @@ function drawPerlinOverlay() {
     for (let x = 0; x < ffCols; x++) {
       let index = x + y * ffCols;
 
+      // use Perlin noise to generate a flow direction for each grid cell
       let angle = noise(xoff, yoff, zoff) * TWO_PI * 4;
       let v = p5.Vector.fromAngle(angle);
       v.setMag(0.8);
@@ -409,8 +414,11 @@ function drawPerlinOverlay() {
     yoff += 0.05;
   }
 
+
+  // gradually change the noise field over time
   zoff += zstep;
 
+  // update and draw all particles
   for (let p of particles) {
     p.follow(flowField);
     p.update();
@@ -425,6 +433,10 @@ function drawPerlinOverlay() {
   noTint();
 }
 
+// particle class used by the Perlin noise flow field
+// References:
+// The Coding Train - Flow Fields and Perlin Noise
+// https://thecodingtrain.com/challenges/24-perlin-noise-flow-field
 class FlowParticle{
   constructor() {
     this.pos = createVector(random(width), random(height));
@@ -434,6 +446,7 @@ class FlowParticle{
     this.maxSpeed = maxSpeed;
   }
 
+  // follow the flow direction of the current grid cell
   follow(vectors) {
     let x = floor(this.pos.x / gridSize);
     let y = floor(this.pos.y / gridSize);
@@ -450,6 +463,7 @@ class FlowParticle{
     this.acc.add(force);
   }
 
+  // update particle movement using velocity and acceleration
   update() {
     this.vel.add(this.acc);
     this.vel.limit(this.maxSpeed);
@@ -457,8 +471,9 @@ class FlowParticle{
     this.acc.mult(0);
   }
 
+  // draw the particle trail onto the overlay layer
   show() {
-    let t = noise(this.pos.x * 0.01, this.pos.y * 0.01);
+    let t = noise(this.pos.x * 0.01, this.pos.y * 0.01); // use Perlin noise to create subtle colour variation
 
     let r = lerp(255, 245, t);
     let g = lerp(220, 230, t);
@@ -482,6 +497,7 @@ class FlowParticle{
     this.prevPos.y = this.pos.y;
   }
 
+  // wrap particles around the screen edges
   edges() {
     if (this.pos.x > width) {
       this.pos.x = 0;

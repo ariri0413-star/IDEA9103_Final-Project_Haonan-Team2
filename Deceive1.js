@@ -1,5 +1,6 @@
 //opening scene: church
 
+// variables for the Deceive transition blood effect
 let Deceive1Timer = 0;
 
 let bloodBlocks = [];
@@ -188,6 +189,7 @@ function drawDeceive1() {
 
   background(12, 10, 22);
   // calculate a responsive pixel size based on the available window space
+  // Claude helped with the formula
   const marginX = cw * 0.03;
   const marginY = ch * 0.04;
   const availW = cw - marginX * 2;
@@ -377,6 +379,7 @@ function drawDeceive1() {
     }
 
   }
+
   drawBloodBlockFall();
 
   Deceive1Timer++;
@@ -400,7 +403,7 @@ function playPause() {
   }
 }
 
-
+// initialise the blood overlay particle system
 function initBloodOverlay() {
 
   bloodBlocks = [];
@@ -408,6 +411,7 @@ function initBloodOverlay() {
   bloodCoverHeight = 0;
   bloodZoff = 0;
 
+  // create falling blood particles with random properties
   for (let i = 0; i < bloodBlockCount; i++) {
 
     bloodBlocks.push({
@@ -422,6 +426,7 @@ function initBloodOverlay() {
 
 }
 
+// draw the blood flood and falling pixel rain transition
 function drawBloodBlockFall() {
 
   noStroke();
@@ -448,6 +453,7 @@ function drawBloodBlockFall() {
     bloodColour[2]
   );
 
+  // combine Perlin noise and sine waves to create an uneven flood surface
   for (
     let y = height;
     y > height - bloodCoverHeight;
@@ -465,6 +471,9 @@ function drawBloodBlockFall() {
       bloodZoff
     );
 
+    // combine multiple sine waves with different speeds and amplitudes
+    // to create a more organic and irregular flood surface
+    // ChatGPT provided suggestions for mathematical formulas used in the blood wave animation.
     let wave1 = sin(
       x * 0.012 - frameCount * 0.22
     ) * 42;

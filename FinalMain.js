@@ -511,6 +511,7 @@ function drawMainScene() {
 
   background(12, 10, 22);
   // calculate a responsive pixel size based on the available window space
+  // Claude helped with the formula
   const marginX = cw * 0.03;
   const marginY = ch * 0.04;
   const availW = cw - marginX * 2;

@@ -95,7 +95,8 @@ ChatGPT and Claude was used to assist with specific coding tasks in this project
 
 All AI-assisted code was reviewed, tested, and modified by the group members before being included in the final project. The code was adjusted to fit our visual design, scene layout, and p5.js project structure.
 ## 5. External references
-None. No external code libraries, tutorials, or source code were directly incorporated into this project.
+- The Coding Train. Flow Fields and Perlin Noise tutorials:
+  https://thecodingtrain.com/challenges/24-perlin-noise-flow-field
 ## 6. Interaction instructions
 - Click the **Play** button to start the audio.
 - Move the mouse across the screen to make a choice.
