@@ -97,6 +97,8 @@ All AI-assisted code was reviewed, tested, and modified by the group members bef
 ## 5. External references
 - The Coding Train. Flow Fields and Perlin Noise tutorials:
   https://thecodingtrain.com/challenges/24-perlin-noise-flow-field
+- Ken Perlin's improved noise algorithm was used as a reference for the custom Perlin noise generator in the Hell ending：
+https://mrl.cs.nyu.edu/~perlin/noise/
 ## 6. Interaction instructions
 - Click the **Play** button to start the audio.
 - Move the mouse across the screen to make a choice.

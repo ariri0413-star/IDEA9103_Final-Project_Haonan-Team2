@@ -516,6 +516,7 @@ function drawNoiseRing(cx, cy, ringW, ringH, mainCol, glowCol, particleCount, pa
   pop();
 }
 
+// draw heaven ending scene
 function drawConfess2() {
   background(255);
 

@@ -117,7 +117,7 @@ const XH = cross.length;
 // ——————————————————————————————————————————————————
 
 // eye
-
+// colour palette for eye
 const eyeColour = {
   'n': null,
   'f': [110, 4, 0],
@@ -179,6 +179,7 @@ const pupilColours = [
   { d: [20, 120, 120], g: [90, 230, 220] }
 ];
 
+// draw an audio-reactive pixel cross
 function drawCross(x, y, ps, rms) {
   noStroke();
 
@@ -204,6 +205,7 @@ function drawCross(x, y, ps, rms) {
   }
 }
 
+// generate random positions for the background crosses
 function randomiseCrosses() {
 
   badCrosses = [];
@@ -247,6 +249,7 @@ function createEyes(num) {
 
     let overlapping = false;
 
+    // check whether the new eye overlaps with any existing eye
     for (let existingEye of eyes) {
       if (isOverlapping(newEye, existingEye)) {
         overlapping = true;
@@ -272,6 +275,7 @@ function isOverlapping(a, b) {
   );
 }
 
+// draw a pixel-art template using a colour map
 function drawPixelTemplate(template, x, y, ps, colourMap) {
   const s = ceil(ps);
   noStroke();
@@ -326,6 +330,9 @@ function createScaryTexts() {
   }
 }
 
+// Custom Perlin noise generator
+// Based on Ken Perlin's improved noise algorithm.
+// Reference: https://mrl.cs.nyu.edu/~perlin/noise/
 function perlinNoise(){
   this.permutation = [
     151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,
@@ -341,6 +348,7 @@ function perlinNoise(){
 
   this.p = [];
 
+  // initialise the permutation lookup table
   this.init = function(){
     this.p = [];
     for (let k = 0; k < 512; k++){
@@ -348,6 +356,7 @@ function perlinNoise(){
     }
   }
 
+  // generate layered Perlin noise using multiple octaves
   this.genNoise = function(x, y, z, times, persistence){
     let weight = 0;
     let frequency = 1;
@@ -364,6 +373,7 @@ function perlinNoise(){
     return res / weight;
   }
 
+  // calculate a single Perlin noise value in 3D space
   this.perlin = function(x, y, z){
     let xi = floor(x) & 255;
     let yi = floor(y) & 255;
@@ -401,6 +411,7 @@ function perlinNoise(){
     return n + 1;
   }
 
+  // calculate the gradient contribution for a corner point
   this.grad = function(h, x, y, z){
     switch(h & 15) {
       case 0: return x + y;
@@ -423,15 +434,18 @@ function perlinNoise(){
     }
   }
 
+  // smoothing function used by Perlin noise interpolation
   this.fade = function(t){
     return t * t * t * (t * (t * 6 - 15) + 10);
   }
 
+  // linear interpolation
   this.lerp = function(a, b, f){
     return a * (1 - f) + b * f;
   }
 }
 
+// draw the entire deceive 2 scene
 function drawDeceive2() {
   
     background(24, 18, 35);
@@ -761,7 +775,7 @@ function drawDeceive2() {
 
 
 
-
+// initialise the blood mist flow field and particle system
 function initBloodMist() {
   mistLayer = createGraphics(width, height);
   mistLayer.clear();
@@ -773,11 +787,13 @@ function initBloodMist() {
   mistParticles = [];
   mistFlowField = [];
 
+  // create particles used by the blood mist effect
   for (let i = 0; i < mistCount; i++) {
     mistParticles.push(new MistParticle());
   }
 }
 
+// draw the blood mist using a custom Perlin noise flow field
 function drawBloodMist() {
   if (!mistLayer || !pns) return;
 
@@ -795,6 +811,7 @@ function drawBloodMist() {
     for (let x = 0; x < mistCols; x++) {
       let index = x + y * mistCols;
 
+      // generate the flow direction for each grid cell
       let n = pns.genNoise(xoff, yoff, mistZoff, 4, 0.5);
       let angle = n * TWO_PI * 2;
 
@@ -811,6 +828,7 @@ function drawBloodMist() {
 
   mistZoff += mistZstep;
 
+  // update and draw all mist particles
   for (let p of mistParticles) {
     p.follow(mistFlowField);
     p.update();
@@ -818,9 +836,11 @@ function drawBloodMist() {
     p.show();
   }
 
+  // draw the mist layer onto the main canvas
   image(mistLayer, 0, 0);
 }
 
+// particle class used by the blood mist effect
 class MistParticle {
   constructor() {
     this.pos = createVector(random(width), random(height));
@@ -829,6 +849,7 @@ class MistParticle {
     this.prevPos = this.pos.copy();
   }
 
+  // follow the flow direction of the current grid cell
   follow(vectors) {
     let x = floor(this.pos.x / mistGridSize);
     let y = floor(this.pos.y / mistGridSize);
@@ -843,6 +864,7 @@ class MistParticle {
     }
   }
 
+  // update particle movement using velocity and acceleration
   update() {
     this.vel.add(this.acc);
     this.vel.limit(mistMaxSpeed);
@@ -850,6 +872,7 @@ class MistParticle {
     this.acc.mult(0);
   }
 
+  // draw the particle trail onto the mist layer
   show() {
     mistLayer.stroke(120, 0, 15, 18);
     mistLayer.strokeWeight(2);
@@ -869,6 +892,7 @@ class MistParticle {
     this.prevPos.y = this.pos.y;
   }
 
+  // wrap particles around the screen edges
   edges() {
     let wrapped = false;
 
