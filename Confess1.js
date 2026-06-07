@@ -47,6 +47,7 @@ function drawCrosses(ps) {
   noStroke();
 
   for (let cross of crosses) {
+    // update each cross through fade in, hold, fade out, and reposition states
     if (cross.state === 'fadeIn') {
       cross.alpha += cross.fadeSpeed;
       if (cross.alpha >= 255) {
@@ -201,7 +202,7 @@ function drawConfess1() {
   const ch = height;
 
   background(12, 10, 22);
-
+  // calculate a responsive pixel size based on the available window space
   const marginX = cw * 0.03;
   const marginY = ch * 0.04;
   const availW = cw - marginX * 2;
@@ -313,7 +314,7 @@ function drawConfess1() {
   // ─────────────────────────────
 
   // nun image
-
+  // render the nun image using a custom pixel grid
   let nunPixelSize = pixSize * 0.6;
 
   let displayH = height * 0.88;
@@ -330,7 +331,7 @@ function drawConfess1() {
   // center position
   let startX = width / 2 - displayW / 2;
   let startY = height - displayH;
-
+   // sample image pixels and redraw them as pixel blocks
   for (let y = 0; y < displayH; y += nunPixelSize) {
     for (let x = 0; x < displayW; x += nunPixelSize) {
       let openingNunX = floor(map(x, 0, displayW, 0, openingNun.width));

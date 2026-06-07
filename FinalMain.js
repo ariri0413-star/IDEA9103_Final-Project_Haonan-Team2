@@ -144,10 +144,11 @@ function initCrosses() {
   }
 }
 
-// define the function for drawing flickering crosses across the background
+// draw flickering crosses in the background
 function drawCrosses(ps) {
   noStroke();
   for (let cross of crosses) {
+    // update each cross through fade in, hold, fade out, and reposition states
     if (cross.state === 'fadeIn') {
       cross.alpha += cross.fadeSpeed;
       if (cross.alpha >= 255) {
@@ -497,7 +498,7 @@ function drawSpider(ps, cw, offsetY) {
 
 // ─────────────────────────────────────────────
 
-// draw!! 
+// draw opening scene
 function drawMainScene() {
 
   // Control different jump strengths for layered flame motion
@@ -509,7 +510,7 @@ function drawMainScene() {
   const ch = height;
 
   background(12, 10, 22);
-
+  // calculate a responsive pixel size based on the available window space
   const marginX = cw * 0.03;
   const marginY = ch * 0.04;
   const availW = cw - marginX * 2;
@@ -626,7 +627,7 @@ function drawMainScene() {
   // ─────────────────────────────
 
   // nun image
-
+  // render the nun image using a custom pixel grid
   let nunPixelSize = pixSize * 0.6;
 
   let displayH = height * 0.88;
@@ -653,7 +654,7 @@ function drawMainScene() {
   let startY = height - displayH;
 
   openingNun.loadPixels();
-
+  // sample image pixels and redraw them as pixel blocks
   for (
     let y = 0;
     y < displayH;
@@ -704,8 +705,11 @@ function drawMainScene() {
   drawChoiceLayer();
 }
 
+// ——————————————————————————————————————————————————
+  // ！！！！！！MAIN DRAW！！！！！！！！！！！！！
+// ——————————————————————————————————————————————————
 function draw() {
-
+// show the system cursor in ending scenes
 if (
     scene === "Confess2" ||
     scene === "Deceive2"
@@ -726,7 +730,7 @@ if (
     restartButton.style("cursor", "none");
 
   }
-
+  // draw the active scene and switch music when needed
   if (scene === "main") {
 
     switchMusic(openingSong);
@@ -751,7 +755,7 @@ if (
     drawDeceive2();
 
   }
-
+  // only show the restart button in ending scenes
   if (
     scene === "Confess2" ||
     scene === "Deceive2"
@@ -768,7 +772,7 @@ if (
 }
 
 let currentSong = null;
-
+// switch background music when the scene changes
 function switchMusic(song) {
 
   if (currentSong !== song) {
@@ -781,6 +785,7 @@ function switchMusic(song) {
 
     currentSong = song;
 
+    // update audio analysers to use the current track
     analyser.setInput(currentSong);
 
     if (fft) {
@@ -1002,6 +1007,7 @@ function updateHoverProgress(confessX, deceiveX, optionY, titleSize) {
 
   textSize(titleSize);
 
+  // detect whether the cursor is hovering over either option
   let confessW = textWidth("Confess");
 
   let deceiveW = textWidth("Deceive");
@@ -1045,11 +1051,12 @@ function updateHoverProgress(confessX, deceiveX, optionY, titleSize) {
     deceiveProgress -= 0.025;
 
   }
-
+  // keep charge values between 0 and 1
   confessProgress = constrain(confessProgress, 0, 1);
 
   deceiveProgress = constrain(deceiveProgress, 0, 1);
 
+  // trigger the scene transition when a choice is fully charged
   if (!hasChosen && confessProgress >= 1) {
 
   hasChosen = true;
@@ -1078,6 +1085,7 @@ function updateHoverProgress(confessX, deceiveX, optionY, titleSize) {
 
 }
 
+// draw hover effects and text animations for a choice option
 function drawOptionEffect(label, x, y, size, progress, type) {
 
   if (type === "holy") {
@@ -1128,6 +1136,8 @@ function drawOptionTextFill(label, x, y, size, progress, type) {
 
   let clipH = textH;
 
+  // create a clipping area to reveal the coloured text based on charge progress
+  // Claude provided suggestions for implementing a clipping effect to reveal text progressively during the charge animation. 
   drawingContext.beginPath();
 
   drawingContext.rect(clipX, clipY, clipW, clipH);
@@ -1148,6 +1158,7 @@ function drawOptionTextFill(label, x, y, size, progress, type) {
 
   drawingContext.restore();
 
+  // add a glow effect when the charge is nearly complete
   if (progress > 0.7) {
 
     let glowAlpha = map(progress, 0.7, 1, 0, 160);
@@ -1181,7 +1192,8 @@ function drawHolyHoverEffect(x, y, size, progress) {
   noStroke();
 
   if (progress < 1) {
-
+    
+    // create glowing pixels around the option while charging
     let amount = 8 + progress * 35;
 
     for (let i = 0; i < amount; i++) {
@@ -1206,6 +1218,7 @@ function drawHolyHoverEffect(x, y, size, progress) {
 
     }
 
+    // draw small cross symbols near the text
     for (let i = 0; i < 3; i++) {
 
       let px = x + random(-size * 1.7, size * 1.7);
@@ -1246,6 +1259,7 @@ function drawBloodHoverEffect(x, y, size, progress) {
 
   let amount = fullScreen ? 180 : 10 + progress * 55;
 
+  // spread red pixels around the option or across the screen
   for (let i = 0; i < amount; i++) {
 
     let px;
@@ -1283,7 +1297,8 @@ function drawBloodHoverEffect(x, y, size, progress) {
     rect(px, py, s, s);
 
   }
-
+  
+  // add glitch-like red bars to reinforce the corruption effect
   let lineCount = fullScreen ? 35 : 6 * progress;
 
   for (let i = 0; i < lineCount; i++) {
@@ -1364,6 +1379,7 @@ function drawHolyFloatingItems() {
 
   rectMode(CENTER);
 
+  // update floating movement and recycle symbols when they leave the screen
   for (let item of holyFloatItems) {
 
     item.x += item.speedX;
@@ -1384,6 +1400,7 @@ function drawHolyFloatingItems() {
 
     if (item.x > width + 60) item.x = -60;
 
+    // create a subtle breathing effect by scaling the symbols over time
     let pulse = 1 + sin(frameCount * 0.025 + item.phase) * 0.12;
 
     let s = item.size * pulse;
@@ -1406,6 +1423,7 @@ function drawHolyFloatingItems() {
 
 }
 
+// draw a small sacred symbol based on its type
 function drawHolySmallSymbol(type, x, y, s) {
 
   let u = max(3, floor(s / 6));
@@ -1474,6 +1492,7 @@ function drawPixelCursor() {
 
   noStroke();
 
+  // calculate colour strength based on cursor position
   let leftZone = width / 3;
 
   let rightZone = width * 2 / 3;
@@ -1492,6 +1511,7 @@ function drawPixelCursor() {
 
   }
 
+  // draw small particles around the cursor
   for (let i = 0; i < 12; i++) {
 
     let angle = random(TWO_PI);
@@ -1522,6 +1542,7 @@ function drawPixelCursor() {
 
   }
 
+  // set the sword size responsively
   let u = constrain(width * 0.007, 5, 9);
 
   push();
@@ -1543,6 +1564,7 @@ function drawPixelCursor() {
 
   let guardColor;
 
+  // choose sword colours based on the active choice direction
   if (yellowPower > redPower) {
 
     bladeMain = color(255, 240, 170);
@@ -1581,6 +1603,7 @@ function drawPixelCursor() {
 
   }
 
+  // draw the sword shadow first, then layer coloured pixel blocks on top
   fill(0, 190);
 
   pixelBlock(0, -8, u);
@@ -1715,6 +1738,7 @@ function drawPixelCursor() {
 
 }
 
+// draw a single pixel block at a grid position
 function pixelBlock(gx, gy, u) {
 
   rect(gx * u, gy * u, u, u);

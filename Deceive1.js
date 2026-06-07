@@ -33,6 +33,7 @@ function initCrosses() {
 function drawCrosses(ps) {
   noStroke();
   for (let cross of crosses) {
+    // update each cross through fade in, hold, fade out, and reposition states
     if (cross.state === 'fadeIn') {
       cross.alpha += cross.fadeSpeed;
       if (cross.alpha >= 255) {
@@ -186,7 +187,7 @@ function drawDeceive1() {
   const ch = height;
 
   background(12, 10, 22);
-
+  // calculate a responsive pixel size based on the available window space
   const marginX = cw * 0.03;
   const marginY = ch * 0.04;
   const availW = cw - marginX * 2;
@@ -303,7 +304,7 @@ function drawDeceive1() {
   // ─────────────────────────────
 
   // nun image
-
+  // render the nun image using a custom pixel grid
   let nunPixelSize = pixSize * 0.6;
 
   let displayH = height * 0.88;
@@ -328,7 +329,7 @@ function drawDeceive1() {
   let startX = width / 2 - displayW / 2;
 
   let startY = height - displayH;
-
+  // sample image pixels and redraw them as pixel blocks
   for (
     let y = 0;
     y < displayH;
