@@ -1773,7 +1773,26 @@ function resetGame() {
   invertFlashActive = false;
   invertFlashTimer = 0;
 
-  switchMusic(openingSong);
+  // reset music to opening song
+  if (currentSong) {
+    currentSong.stop();
+  }
+
+  openingSong.stop();
+  goodSong.stop();
+  badSong.stop();
+
+  currentSong = openingSong;
+
+  analyser.setInput(currentSong);
+
+  if (fft) {
+    fft.setInput(currentSong);
+  }
+
+  if (musicStarted) {
+    currentSong.loop();
+  }
 
   playButton.html("Pause");
 

@@ -381,6 +381,7 @@ function drawDeceive1() {
   Deceive1Timer++;
   
   if (Deceive1Timer > 90) {
+  badSong.stop();
   Deceive1Timer = 0;
   scene = "Deceive2";
   }

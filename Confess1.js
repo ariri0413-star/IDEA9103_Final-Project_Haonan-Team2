@@ -320,6 +320,7 @@ function drawConfess1() {
   Confess1Timer++;
 
   if (Confess1Timer > 90) {
+  goodSong.stop();
   Confess1Timer = 0;
   scene = "Confess2";
   }
