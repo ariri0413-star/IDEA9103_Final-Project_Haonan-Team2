@@ -100,7 +100,7 @@ All AI-assisted code was reviewed, tested, and modified by the group members bef
 ## 5. External references
 None. No external code libraries, tutorials, or source code were directly incorporated into this project.
 ## 6. Interaction instructions
-- Click the **Play/Pause** button to start the audio.
+- Click the **Play** button to start the audio.
 - Move the mouse across the screen to make a choice.
 - Hover over **Confess** to charge the holy path and enter the **Heaven ending**.
 - Hover over **Deceive** to charge the corrupted path and enter the **Hell ending**.

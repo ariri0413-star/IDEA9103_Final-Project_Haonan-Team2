@@ -2,13 +2,20 @@
 
 let Deceive1Timer = 0;
 
-let bloodBlocks = [];
-let bloodPileBlocks = [];
-let bloodZoff = 0;
-let bloodCoverHeight = 0;
+// blood-like Perlin noise overlay
+let bloodLayer;
+let bloodParticles = [];
+let bloodFlowField = [];
 
-let bloodBlockCount = 650;
-let bloodColour = [120, 0, 15];
+let bloodGridSize = 10;
+let flowCols, flowRows;
+
+let bloodZoff = 0;
+let bloodZstep = 0.3;
+
+let bloodParticleNums = 6000;
+let bloodMaxSpeed = 12;
+let bloodOverlayAlpha = 0;
 
 
 
@@ -376,7 +383,7 @@ function drawDeceive1() {
     }
 
   }
-  drawBloodBlockFall();
+  drawBloodOverlay();
 
   Deceive1Timer++;
   
@@ -397,157 +404,152 @@ function playPause() {
     playButton.html("Pause");
   }
 }
-
-
 function initBloodOverlay() {
+  bloodLayer = createGraphics(width, height);
+  bloodLayer.clear();
+  bloodLayer.noSmooth();
 
-  bloodBlocks = [];
-  bloodPileBlocks = [];
-  bloodCoverHeight = 0;
-  bloodZoff = 0;
+  flowCols = floor(width / bloodGridSize);
+  flowRows = floor(height / bloodGridSize);
 
-  for (let i = 0; i < bloodBlockCount; i++) {
+  bloodParticles = [];
+  bloodFlowField = [];
 
-    bloodBlocks.push({
-      x: random(width),
-      y: random(-height, 0),
-      size: random(10, 26),
-      speed: random(18, 38),
-      offset: random(1000)
-    });
-
+  for (let i = 0; i < bloodParticleNums; i++) {
+    bloodParticles.push(new BloodParticle(true));
   }
 
+  bloodOverlayAlpha = 0;
 }
 
-function drawBloodBlockFall() {
+function drawBloodOverlay() {
+  let yoff = 0;
 
-  noStroke();
+  for (let y = 0; y < flowRows; y++) {
+    let xoff = 0;
 
-  // delay the flood so blood rain appears first
-  let floodDelay = 25;
-  let floodDuration = 90 - floodDelay;
+    for (let x = 0; x < flowCols; x++) {
+      let index = x + y * flowCols;
 
-  if (Deceive1Timer > floodDelay) {
+      let angle =
+        HALF_PI +
+        noise(xoff, yoff, bloodZoff) * 1.1 -
+        0.55;
 
-    bloodCoverHeight = min(
-      bloodCoverHeight + height / floodDuration,
-      height
-    );
+      let v = p5.Vector.fromAngle(angle);
+      v.setMag(0.8);
 
-  }
+      bloodFlowField[index] = v;
 
-  // draw rising pixel flood, not one smooth rectangle
-  let pixelSize = 18;
-
-  fill(
-    bloodColour[0],
-    bloodColour[1],
-    bloodColour[2]
-  );
-
-  for (
-    let y = height;
-    y > height - bloodCoverHeight;
-    y -= pixelSize
-  ) {
-
-    for (
-      let x = 0;
-      x < width;
-      x += pixelSize
-    ) {
-
-      let n = noise(
-      x * 0.012,
-      bloodZoff
-    );
-
-    let wave1 = sin(
-      x * 0.012 - frameCount * 0.22
-    ) * 42;
-
-    let wave2 = sin(
-      x * 0.026 - frameCount * 0.34
-    ) * 18;
-
-    let wave3 = sin(
-      x * 0.006 - frameCount * 0.14
-    ) * 28;
-
-    let wave =
-      wave1 +
-      wave2 +
-      wave3;
-
-    let pixelNoise = map(
-      n,
-      0,
-      1,
-      -18,
-      18
-    );
-
-    let topEdge =
-      height -
-      bloodCoverHeight +
-      wave +
-      pixelNoise;
-
-    // make the top edge rise like pixel waves
-    if (
-      y > topEdge
-    ) {
-            rect(
-              x,
-              y,
-              pixelSize,
-              pixelSize
-            );
-
-          }
-
-        }
-
-      }
-
-  // falling pixel rain
-  for (let block of bloodBlocks) {
-
-    let n = noise(
-      block.offset,
-      frameCount * 0.05,
-      bloodZoff
-    );
-
-    let drift = map(n, 0, 1, -6, 6);
-
-    block.x += drift;
-    block.y += block.speed;
-
-    rect(
-      block.x,
-      block.y,
-      block.size,
-      block.size
-    );
-
-    // reset after reaching bottom or red flood
-    if (
-      block.y > height ||
-      block.y + block.size > height - bloodCoverHeight
-    ) {
-
-      block.y = random(-height * 0.8, -20);
-      block.x = random(width);
-      block.size = random(10, 26);
-      block.speed = random(18, 38);
-      block.offset = random(1000);
-
+      xoff += 0.03;
     }
 
+    yoff += 0.03;
   }
 
-  bloodZoff += 0.025;
+  bloodZoff += bloodZstep;
 
+  for (let p of bloodParticles) {
+    p.follow(bloodFlowField);
+    p.update();
+    p.edges();
+    p.show();
+  }
+
+  bloodOverlayAlpha = min(bloodOverlayAlpha + 8, 255);
+
+  tint(255, bloodOverlayAlpha);
+  image(bloodLayer, 0, 0);
+  noTint();
+}
+
+class BloodParticle {
+  constructor(firstTime = false) {
+    this.reset(firstTime);
+  }
+
+  reset(firstTime = false) {
+    this.pos = createVector(
+      random(width),
+      firstTime ? random(height) : random(-300, -20)
+    );
+
+    this.vel = createVector(
+      random(-0.05, 0.05),
+      random(0.3, 0.8)
+    );
+
+    this.acc = createVector(0, 0);
+    this.prevPos = this.pos.copy();
+    this.maxSpeed = bloodMaxSpeed;
+  }
+
+  follow(vectors) {
+    let x = floor(this.pos.x / bloodGridSize);
+    let y = floor(this.pos.y / bloodGridSize);
+
+    if (x < 0 || x >= flowCols || y < 0 || y >= flowRows) return;
+
+    let index = x + y * flowCols;
+    let force = vectors[index];
+
+    if (force) {
+      this.applyForce(force);
+    }
+  }
+
+  applyForce(force) {
+    this.acc.add(force);
+  }
+
+  update() {
+    this.vel.add(this.acc);
+    this.vel.limit(this.maxSpeed);
+
+    this.vel.y += 0.01;
+    this.vel.mult(0.985);
+
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+
+  show() {
+    if (this.pos.y < 0) {
+      this.updatePrev();
+      return;
+    }
+
+    bloodLayer.stroke(120, 0, 15, 200);
+    bloodLayer.strokeWeight(3.5);
+
+    bloodLayer.line(
+      this.pos.x,
+      this.pos.y,
+      this.prevPos.x,
+      this.prevPos.y
+    );
+
+    this.updatePrev();
+  }
+
+  updatePrev() {
+    this.prevPos.x = this.pos.x;
+    this.prevPos.y = this.pos.y;
+  }
+
+  edges() {
+    if (this.pos.y > height + 30) {
+      this.reset(false);
+    }
+
+    if (this.pos.x > width) {
+      this.pos.x = 0;
+      this.updatePrev();
+    }
+
+    if (this.pos.x < 0) {
+      this.pos.x = width;
+      this.updatePrev();
+    }
+  }
 }

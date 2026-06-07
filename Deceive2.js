@@ -685,31 +685,78 @@ function drawDeceive2() {
 
   }
 
-  // invert flash
+  // ——————————————————————————————————————————
+  // screen invert flash effect
+  // draws a white difference-blend overlay to simulate colour inversion
 
   if (invertFlashActive) {
 
-    // 你原来的闪屏代码放这里
+    if (invertFlashMode === 0) {
 
+      // single hold mode: stay inverted for invertFlashTimer frames
+      drawingContext.save();
+
+      // DIFFERENCE blend: white overlay inverts every pixel beneath it
+      drawingContext.globalCompositeOperation = "difference";
+
+      noStroke();
+      fill(255, 255, 255, 255);
+
+      rect(0, 0, width, height);
+
+      drawingContext.restore();
+
+      invertFlashTimer--;
+
+      if (invertFlashTimer <= 0) {
+        invertFlashActive = false;
+      }
+
+    } else {
+
+      // strobe mode: flicker on and off multiple times
+      if (invertStrobePhase === 0) {
+
+        // on phase: draw invert overlay
+        drawingContext.save();
+
+        // DIFFERENCE blend: white overlay inverts every pixel beneath it
+        drawingContext.globalCompositeOperation = "difference";
+
+        noStroke();
+        fill(255, 255, 255, 255);
+
+        rect(0, 0, width, height);
+
+        drawingContext.restore();
+
+      }
+
+      invertFlashTimer--;
+
+      if (invertFlashTimer <= 0) {
+
+        if (invertStrobePhase === 0) {
+          // switch to off phase
+          invertStrobePhase = 1;
+          invertFlashTimer = invertStrobeOffFrames;
+          invertStrobeCount++;
+        } else {
+          // switch back to on phase, or end if done
+          if (invertStrobeCount >= invertStrobeTotal) {
+            invertFlashActive = false;
+          } else {
+            invertStrobePhase = 0;
+            invertFlashTimer = invertStrobeOnFrames;
+          }
+        }
+      }
+    }
   }
-
-  // 自动回 main，建议放在 high 判断外面
-
-  Deceive2Timer++;
-
-  if (Deceive2Timer > 1200) {
-
-    Deceive2Timer = 0;
-
-    Deceive2sceneTransitionAlpha = 255;
-
-    scene = "main";
-
-    hasChosen = false;
-
-  }
-
 }
+
+
+
 
 
 function initBloodMist() {

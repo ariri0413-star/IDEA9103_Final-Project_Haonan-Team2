@@ -4,6 +4,7 @@ let choiceTransition = false;
 let choiceTransitionType = ""; // "Confess" or "Deceive"
 let choiceTransitionTimer = 0;
 let choiceTransitionDuration = 60;
+let buttonBar;
 
 let scene = "main";
 let hasChosen = false;
@@ -21,8 +22,16 @@ let analyser;
 
 let fft;
 
-// Play / pause button
+// Play button
 let playButton;
+
+// Pause button
+let pauseButton;
+
+// restart button
+let restartButton;
+
+let musicStarted = false;
 
 let openingNun;
 let goodNun;
@@ -61,7 +70,7 @@ function setup() {
 
   colorMode(RGB);
 
-  noCursor();
+  // noCursor();
   textFont(myFont);
 
    // Main scene initialize
@@ -93,9 +102,25 @@ function setup() {
   fft = new p5.FFT();
   fft.setInput(badSong);
 
-  playButton = createButton("Play/Pause");
-  playButton.position(width * 0.02, height * 0.03);
+  //chatgpt helped create the button bar to properly position the two buttons together and make it reponsive to window resizing 
+  buttonBar = createDiv();
+  buttonBar.position(width * 0.02, height * 0.03);
+  buttonBar.style("display", "flex");
+  buttonBar.style("gap", "8px");
+  buttonBar.style("align-items", "center");
+  buttonBar.style("cursor", "none");
+
+  playButton = createButton("Play");
+  playButton.parent(buttonBar);
   playButton.mousePressed(playPause);
+  playButton.style("cursor", "none");
+
+  // restart button
+  restartButton = createButton("Restart");
+  restartButton.parent(buttonBar);
+  restartButton.mousePressed(resetGame);
+  restartButton.style("cursor", "none");
+  restartButton.hide();
 
   setTimeout(triggerInvertFlash, random(4000, 8000));
 
@@ -680,7 +705,29 @@ function drawMainScene() {
 
 function draw() {
 
+if (
+    scene === "Confess2" ||
+    scene === "Deceive2"
+  ) {
+
+    cursor();
+
+    buttonBar.style("cursor", "default");
+    playButton.style("cursor", "default");
+    restartButton.style("cursor", "default");
+
+  } else {
+
+    noCursor();
+
+    buttonBar.style("cursor", "none");
+    playButton.style("cursor", "none");
+    restartButton.style("cursor", "none");
+
+  }
+
   if (scene === "main") {
+
     switchMusic(openingSong);
     drawMainScene();
 
@@ -689,6 +736,7 @@ function draw() {
     drawConfess1();
 
   } else if (scene === "Confess2") {
+
     switchMusic(goodSong);
     drawConfess2();
 
@@ -697,8 +745,22 @@ function draw() {
     drawDeceive1();
 
   } else if (scene === "Deceive2") {
+
     switchMusic(badSong);
     drawDeceive2();
+
+  }
+
+  if (
+    scene === "Confess2" ||
+    scene === "Deceive2"
+  ) {
+
+    restartButton.show();
+
+  } else {
+
+    restartButton.hide();
 
   }
 
@@ -718,13 +780,18 @@ function switchMusic(song) {
 
     currentSong = song;
 
-    currentSong.loop();
-
     analyser.setInput(currentSong);
 
     if (fft) {
 
       fft.setInput(currentSong);
+
+    }
+
+    // Only play music if the user has already started it
+    if (musicStarted) {
+
+      currentSong.loop();
 
     }
 
@@ -737,9 +804,10 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 
   // button position
-  if (playButton) {
-    playButton.position(width * 0.02, height * 0.03);
+  if (buttonBar) {
+    buttonBar.position(width * 0.02, height * 0.03);
   }
+  // restartButton.position(width * 0.11, height * 0.03);
 
   // Main scene / Confess1 / Deceive1 use crosses
   initCrosses();
@@ -757,18 +825,56 @@ function windowResized() {
 }
 
 // Play or pause background music
+// Play or pause the current background music
 function playPause() {
-  if (!currentSong) {
-    currentSong = openingSong;
+
+  // Start audio on the first click
+  if (!musicStarted) {
+
+    userStartAudio();
+
+    if (!currentSong) {
+
+      currentSong = openingSong;
+
+      analyser.setInput(currentSong);
+
+      if (fft) {
+
+        fft.setInput(currentSong);
+
+      }
+
+    }
+
+    currentSong.loop();
+
+    musicStarted = true;
+
+    playButton.html("Pause");
+
+    return;
+
   }
 
-  if (currentSong.isPlaying()) {
+  // Pause music
+  if (currentSong && currentSong.isPlaying()) {
+
     currentSong.pause();
+
     playButton.html("Play");
-  } else {
+
+  } 
+  
+  // Resume music
+  else if (currentSong) {
+
     currentSong.loop();
+
     playButton.html("Pause");
+
   }
+
 }
 
 // ─────────────────────────────────────────────
@@ -1423,6 +1529,9 @@ function drawPixelCursor() {
 
   rotate(-PI / 4);
 
+  // move the sword body down so the cursor point is on the sword tip
+  translate(0, 8 * u);
+
   let bladeMain;
 
   let bladeLight;
@@ -1608,5 +1717,64 @@ function drawPixelCursor() {
 function pixelBlock(gx, gy, u) {
 
   rect(gx * u, gy * u, u, u);
+
+}
+
+// -————————RESET！！！！！！AND RESTART！！！！！！！！————————————————————————
+// ————————————————————————————————————————————————————————————————————————
+
+function resetGame() {
+
+  scene = "main";
+  hasChosen = false;
+
+  confessProgress = 0;
+  deceiveProgress = 0;
+
+  choiceTransition = false;
+  choiceTransitionType = "";
+  choiceTransitionTimer = 0;
+
+  Confess1Timer = 0;
+  Deceive1Timer = 0;
+  Confess2Timer = 0;
+  Deceive2Timer = 0;
+
+  Confess2sceneTransitionAlpha = 255;
+  Deceive2sceneTransitionAlpha = 255;
+
+  // reset opening / choice scene
+  initCrosses();
+  initHolyFloatItems();
+
+  // reset Confess1
+  initFlowLayer();
+
+  // reset Confess2
+  initWings();
+
+  // reset Deceive1
+  initBloodOverlay();
+
+  // reset Deceive2
+  scaryTexts = [];
+  badCrosses = [];
+  eyes = [];
+
+  randomiseCrosses();
+  createEyes(7);
+  initBloodMist();
+
+  if (pns) {
+    pns = new perlinNoise();
+    pns.init();
+  }
+
+  invertFlashActive = false;
+  invertFlashTimer = 0;
+
+  switchMusic(openingSong);
+
+  playButton.html("Pause");
 
 }

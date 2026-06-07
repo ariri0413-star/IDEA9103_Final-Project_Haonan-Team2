@@ -746,12 +746,4 @@ function drawConfess2() {
     Confess2sceneTransitionAlpha -= 3; // 1.5 seconds fade out
 
   }
-
-  Confess2Timer++;
-
-  if (Confess2Timer > 300) {
-  Confess2Timer = 0;
-  scene = "main";
-  hasChosen = false;
-  }
 }
