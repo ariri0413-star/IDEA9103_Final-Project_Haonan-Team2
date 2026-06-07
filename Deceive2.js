@@ -780,7 +780,7 @@ function drawBloodMist() {
 
   mistLayer.noStroke();
 
-  // 用半透明背景慢慢擦掉旧轨迹
+  // slowly erase old trails with a transparent background
   mistLayer.fill(24, 18, 35, 10);
   mistLayer.rect(0, 0, width, height);
 

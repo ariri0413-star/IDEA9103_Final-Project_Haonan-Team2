@@ -314,7 +314,7 @@ function drawConfess1() {
     }
   }
 
-  // 柏林噪声覆盖在图片最上层，并且慢慢累积
+  // overlay Perlin noise above the image and let it slowly build up
   drawPerlinOverlay();
 
   Confess1Timer++;
