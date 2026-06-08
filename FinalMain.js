@@ -779,26 +779,42 @@ function switchMusic(song) {
   if (currentSong !== song) {
 
     if (currentSong && currentSong.isPlaying()) {
-
       currentSong.stop();
-
     }
 
     currentSong = song;
 
-    // update audio analysers to use the current track
     analyser.setInput(currentSong);
 
     if (fft) {
-
       fft.setInput(currentSong);
-
     }
 
-    // Only play music if the user has already started it
-    if (musicStarted) {
+    // Ending scenes always start music automatically
+    if (
+      scene === "Confess2" ||
+      scene === "Deceive2"
+    ) {
+
+      currentSong.stop();
+      currentSong.loop();
+
+      musicStarted = true;
+
+      playButton.html("Pause");
+
+    } 
+    
+    // Opening scene only play if the user already started music because of the browser audio policy
+    else if (musicStarted) {
 
       currentSong.loop();
+
+      playButton.html("Pause");
+
+    } else {
+
+      playButton.html("Play");
 
     }
 
