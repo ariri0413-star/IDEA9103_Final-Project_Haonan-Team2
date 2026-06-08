@@ -70,35 +70,39 @@ In the heaven scene, blue and yellow light rays rotate over time by updating the
 *Rotating Light Rays and Flying Wings*
 
 ### 3.3. Perlin noise and randomness: Wenjun Gu (@wenjungu0109)
-The background is adorned with delicate floral patterns. While the player remains honest, the visuals employ a bright, warm color palette to cultivate a sacred and tranquil atmosphere. However, once the player chooses to "lie," the environmental tones instantly submerge into a somber combination of black and dark crimson, accompanied by a heavy "Glitch Art" effect characterized by shattering rectangular artifacts. The underlying Perlin noise transitions from a soft warm white into flowing dark red particles.Additionally, Perlin noise can simulate the dynamic movement of smoke and airflow when a candle is extinguished, while interacting with environmental parameters to generate smooth and natural visual effects, thereby enhancing the realism and immersion of the animation. This stark visual contrast intuitively manifests the collapse and distortion of the nun’s psyche, echoing the spiritual alienation brought by self-deception and immersing the player in a profound psychological horror experience.
+Perlin noise and randomness are used to create atmospheric visual effects across scene transitions and ending environments. During the transition into the Heaven ending, Perlin noise generates floating sacred symbols and decorative pattern effects that gradually appear as the scene loads, creating a smooth and divine transformation. In the Heaven scene, Perlin noise is applied to the angelic halo effect, producing gentle breathing-like movement and subtle variations in light that reinforce the peaceful and sacred atmosphere.
+
+In contrast, the Hell ending uses Perlin noise to generate spreading blood mist particles that gradually disperse across the screen. The organic and unpredictable movement created by the noise function gives the mist a natural flow, enhancing the unsettling mood of the scene. By combining controlled randomness with smooth procedural motion, these effects help distinguish the emotional tone of each ending while maintaining visual continuity throughout the experience.
 
 ![Sketch](image/perlin1.png)
 *Transition: to heaven*
-
-![Sketch](image/perlin2.png)
-*Transition: to hell*
 ![Sketch](image/Bloodmist.png)
 *Blood Mist*
+![Sketch](image/Anglehalo.png)
+*Angle Halo*
 
 ### 3.4. User input: Yang Zhou (@Yang-Zhou-123)
-The User Input mechanic allows players to directly influence the development of the story through keyboard and mouse interactions. 
+The User Input mechanic allows players to interact with the choice system through mouse interaction. Instead of using traditional buttons, the cursor is transformed into a sword that visually reflects the player’s choice. When hovering over the “Confess” option, the sword gradually changes from white to gold, while the text of the option also shifts from white to yellow to indicate the charging progress. Similarly, hovering over the “Deceive” option causes the sword to transition from white to red, and the text gradually changes from white to red as the charge builds up. These charging animations provide immediate visual feedback and encourage deliberate decision-making.
 
-During key moments in the narrative, the player must make choices for the nun: whether to confront the truth or lie to escape reality. These decisions are made by clicking dialogue options or pressing assigned keys on the keyboard. Each choice immediately changes the visual atmosphere of the game. When the player chooses to face the truth, the environment gradually becomes warmer and brighter, with calmer movement and visuals. When the player chooses to lie, the screen begins to show glitches, distortion, and unstable visual effects. 
-
-During these visual transformations, players can also interact with the glitch effects through mouse movement, causing distorted areas to spread, shake, or briefly return to normal. This allows players to participate more directly in the changing state of the world. The mechanic ensures that players are not simply watching the nun’s psychological struggle, but actively participating in the transformation of her emotions and fate. Through interaction, players can experience how their choices gradually reshape the world, reinforcing the project’s themes of self-deception, guilt, and emotional consequences.
+As the sword charges, the environment begins to react to the player’s choice. Once the Confess option is fully charged, sacred symbols emerge and float across the screen, reinforcing the theme of redemption and spiritual salvation. In contrast, fully charging the Deceive option triggers random noise particles and glitch animations, creating a corrupted and unstable visual atmosphere. These effects transform a simple choice into an interactive visual experience, allowing players to actively participate in shaping the emotional direction of the story and highlighting the contrast between confession and avoidance.
 
 ![Sketch](image/userinput2.png)
 *User Option: Confess*
 ![Sketch](image/userinput3.png)
 *User Option: Deceive*
 ## 4. AI acknowledgement
-ChatGPT and Claude was used to assist with specific coding tasks in this project. It helped calculate the pixel grid size so that visual elements could keep the same scale across different screen sizes and scenes. It was also used to help generate mirrored pixel images, such as candles or decorative objects, so the left and right sides of the scene could match visually. In addition, AI mainly helped with position calculations for visual elements, including calculating symmetrical positions, spacing between objects, and responsive placement based on the canvas size. This helped visual elements stay aligned and balanced across different scenes.
+ChatGPT and Claude were used to assist with specific coding tasks during this project. AI support was mainly used for mathematical calculations, responsive layout formulas, and small programming suggestions within p5.js.
 
-All AI-assisted code was reviewed, tested, and modified by the group members before being included in the final project. The code was adjusted to fit our visual design, scene layout, and p5.js project structure.
+This included calculating pixel grid sizes so that visual elements could maintain a consistent scale across different screen sizes, generating mirrored pixel-art structures, and calculating symmetrical positions, spacing, and responsive placement of objects on the canvas. AI was also used to suggest formulas for some visual effects, such as wave-like motion. AI also provided examples of p5.js functions and loop structures.
+
+All AI-assisted code was reviewed, tested, modified, and integrated by the group members before inclusion in the final project. The final implementation, visual design, scene composition, interaction design, and creative decisions were developed and refined by the project team.
 ## 5. External references
-None. No external code libraries, tutorials, or source code were directly incorporated into this project.
+- The Coding Train. Flow Fields and Perlin Noise tutorials:
+  https://thecodingtrain.com/challenges/24-perlin-noise-flow-field
+- Ken Perlin's improved noise algorithm was used as a reference for the custom Perlin noise generator in the Hell ending：
+https://mrl.cs.nyu.edu/~perlin/noise/
 ## 6. Interaction instructions
-- Click the **Play/Pause** button to start the audio.
+- Click the **Play** button to start the audio.
 - Move the mouse across the screen to make a choice.
 - Hover over **Confess** to charge the holy path and enter the **Heaven ending**.
 - Hover over **Deceive** to charge the corrupted path and enter the **Hell ending**.

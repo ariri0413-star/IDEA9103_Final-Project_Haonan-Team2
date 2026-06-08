@@ -109,6 +109,7 @@ function perlinNoise(){
 		return a * (1 - f) + b * f;
 	}
 }
+
 let pns = new perlinNoise();
 let openingSong;
 let badSong;
@@ -469,6 +470,7 @@ function createScaryTexts() {
     });
   }
 }
+
 function initBloodMist() {
   mistLayer = createGraphics(width, height);
   mistLayer.clear();
@@ -484,6 +486,7 @@ function initBloodMist() {
     mistParticles.push(new MistParticle());
   }
 }
+
 function draw() {
   
     background(24, 18, 35);
